@@ -1,0 +1,55 @@
+/*
+ * Lokasi: public/assets/css/products.css
+ * Deskripsi: Styling khusus halaman produk.
+ * Diload di: products/index.php, products/create.php, products/edit.php
+ */
+
+/* ============================================================
+   1. FILTER BAR OVERRIDES
+   ============================================================ */
+.filter-bar .input-group-text {
+    border-color: var(--border);
+    padding: 6px 10px;
+}
+
+.filter-bar .form-control {
+    border-color: var(--border);
+}
+
+/* ============================================================
+   2. PRODUCT TABLE
+   ============================================================ */
+.table code {
+    background: var(--bg-page);
+    padding: 2px 6px;
+    border-radius: var(--radius-xs);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+}
+
+/* ============================================================
+   3. MARGIN INFO BADGE
+   ============================================================ */
+.product-margin-info {
+    background: var(--bg-page);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.product-margin-info strong {
+    font-weight: 700;
+}
+
+/* ============================================================
+   4. FORM HELPER TEXT
+   ============================================================ */
+.form-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}

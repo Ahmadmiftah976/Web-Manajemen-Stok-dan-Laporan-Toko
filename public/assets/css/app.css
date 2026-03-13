@@ -1,0 +1,640 @@
+/*
+ * Lokasi: public/assets/css/app.css
+ * Deskripsi: CSS Variables global dan komponen custom
+ *            yang tidak tersedia di Bootstrap 5.
+ * Diload di: semua halaman (layouts/main.php & layouts/auth.php)
+ */
+
+/* ============================================================
+   1. GOOGLE FONTS
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ============================================================
+   2. CSS VARIABLES
+   ============================================================ */
+:root {
+    /* Primary — Dark Slate / Navy */
+    --primary-900:  #0f172a;
+    --primary-800:  #1e293b;
+    --primary-700:  #334155;
+    --primary-600:  #475569;
+    --primary-500:  #64748b;
+
+    /* Accent — Blue */
+    --accent-600:   #2563eb;
+    --accent-500:   #3b82f6;
+    --accent-400:   #60a5fa;
+    --accent-100:   #dbeafe;
+    --accent-50:    #eff6ff;
+
+    /* Status Colors */
+    --success-600:  #16a34a;
+    --success-500:  #22c55e;
+    --success-100:  #dcfce7;
+    --warning-500:  #f59e0b;
+    --warning-100:  #fef3c7;
+    --danger-600:   #dc2626;
+    --danger-500:   #ef4444;
+    --danger-100:   #fee2e2;
+
+    /* Teks */
+    --text-dark:    #0f172a;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted:   #94a3b8;
+    --text-light:   #cbd5e1;
+
+    /* Border & Background */
+    --border:       #e2e8f0;
+    --border-light: #f1f5f9;
+    --bg-page:      #f8fafc;
+    --bg-card:      #ffffff;
+    --bg-hover:     #f1f5f9;
+
+    /* Dimensi layout */
+    --sidebar-w:    250px;
+    --navbar-h:     56px;
+
+    /* Shadow */
+    --shadow-xs:    0 1px 2px rgba(0,0,0,0.04);
+    --shadow-sm:    0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md:    0 4px 6px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.03);
+
+    /* Border radius — smaller for corporate feel */
+    --radius-xs:    3px;
+    --radius-sm:    4px;
+    --radius-md:    6px;
+    --radius-lg:    8px;
+}
+
+/* ============================================================
+   3. BASE / RESET
+   ============================================================ */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Override font Bootstrap ke Inter */
+h1, h2, h3, h4, h5, h6,
+.btn, .form-control, .form-select,
+.table, .badge, .alert, .modal {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+/* ============================================================
+   4. OVERRIDE BOOTSTRAP — Corporate Blue Theme
+   ============================================================ */
+
+/* Tombol Primary (Blue) */
+.btn-primary {
+    background-color: var(--accent-600);
+    border-color: var(--accent-600);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s ease;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+.btn-primary:active {
+    background-color: #1e40af;
+    border-color: #1e40af;
+}
+
+/* Tombol Success (Green) */
+.btn-success {
+    background-color: var(--success-600);
+    border-color: var(--success-600);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s ease;
+    box-shadow: none;
+}
+
+.btn-success:hover {
+    background-color: #15803d;
+    border-color: #15803d;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-success:active {
+    transform: none !important;
+}
+
+/* Tombol Danger */
+.btn-danger {
+    background-color: var(--danger-600);
+    border-color: var(--danger-600);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+}
+
+/* Outline variants */
+.btn-outline-primary {
+    color: var(--accent-600);
+    border-color: var(--accent-600);
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: var(--radius-sm);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--accent-600);
+    border-color: var(--accent-600);
+}
+
+.btn-outline-secondary {
+    color: var(--text-secondary);
+    border-color: var(--border);
+    font-weight: 500;
+    font-size: 13px;
+    border-radius: var(--radius-sm);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--bg-hover);
+    border-color: var(--border);
+    color: var(--text-dark);
+}
+
+.btn-outline-danger {
+    color: var(--danger-600);
+    border-color: var(--danger-600);
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: var(--radius-sm);
+}
+
+/* General buttons */
+.btn {
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.btn-sm {
+    font-size: 12px;
+    padding: 5px 10px;
+}
+
+/* Form focus ring */
+.form-control,
+.form-select {
+    border-radius: var(--radius-sm);
+    border-color: var(--border);
+    font-size: 13px;
+    padding: 8px 12px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent-500);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+
+.form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+/* Badge warna */
+.bg-success { background-color: var(--success-600) !important; }
+.bg-primary { background-color: var(--accent-600) !important; }
+.bg-danger  { background-color: var(--danger-600) !important; }
+
+.badge {
+    font-weight: 600;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: var(--radius-xs);
+}
+
+/* Table */
+.table {
+    font-size: 13px;
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background-color: var(--bg-page);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border);
+    padding: 10px 12px;
+    white-space: nowrap;
+}
+
+.table tbody td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-primary);
+}
+
+.table tbody tr:hover {
+    background-color: var(--bg-hover);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Card Bootstrap */
+.card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xs);
+    background: var(--bg-card);
+}
+
+.card-header {
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 16px;
+}
+
+.card-body {
+    padding: 16px;
+}
+
+/* Alert */
+.alert {
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 14px;
+}
+
+/* ============================================================
+   5. KOMPONEN CUSTOM
+   ============================================================ */
+
+/* -- Page Header -------------------------------------------- */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.page-header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.page-header-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* -- Stat Card (Dashboard) ---------------------------------- */
+.stat-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    box-shadow: var(--shadow-xs);
+    transition: box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: var(--accent-500);
+    border-radius: 0 2px 2px 0;
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.stat-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.stat-card-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.stat-card-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-dark);
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+
+.stat-card-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* -- Notification Bell ------------------------------------- */
+.btn-notif {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+.btn-notif:hover {
+    border-color: var(--accent-500);
+    color: var(--accent-600);
+    background: var(--accent-50);
+}
+
+.btn-notif svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 16px;
+    height: 16px;
+    background: var(--danger-500);
+    color: white;
+    border-radius: 50%;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+}
+
+/* -- Notification Dropdown --------------------------------- */
+.notif-wrapper {
+    position: relative;
+}
+
+.btn-notif {
+    cursor: pointer;
+}
+
+.notif-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 300px;
+    max-height: 360px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    z-index: 9999;
+}
+
+.notif-wrapper.open .notif-dropdown {
+    display: block;
+}
+
+.notif-dropdown-header {
+    position: sticky;
+    top: 0;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+}
+
+.notif-dropdown-item {
+    display: block;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: #1e293b;
+    border-bottom: 1px solid #f1f5f9;
+    background-color: #ffffff;
+    transition: background-color 0.12s;
+}
+
+.notif-dropdown-item:hover {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    text-decoration: none;
+}
+
+.notif-item-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: #1e293b;
+}
+
+.notif-item-detail {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.notif-dropdown-empty {
+    padding: 20px 14px;
+    text-align: center;
+    font-size: 13px;
+    color: #94a3b8;
+    background-color: #ffffff;
+}
+
+/* -- Empty State ------------------------------------------- */
+.empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-muted);
+}
+
+.empty-state svg {
+    width: 48px;
+    height: 48px;
+    stroke: var(--text-light);
+    fill: none;
+    stroke-width: 1.5;
+    margin-bottom: 12px;
+}
+
+.empty-state h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.empty-state p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+/* -- Action buttons in tables ------------------------------ */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: var(--radius-xs);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+}
+
+.btn-action-edit {
+    color: var(--accent-600);
+    background: var(--accent-50);
+    border-color: var(--accent-100);
+}
+
+.btn-action-edit:hover {
+    background: var(--accent-100);
+    color: var(--accent-600);
+}
+
+.btn-action-delete {
+    color: var(--danger-600);
+    background: var(--danger-100);
+    border-color: #fecaca;
+}
+
+.btn-action-delete:hover {
+    background: #fecaca;
+    color: var(--danger-600);
+}
+
+.btn-action svg {
+    width: 13px;
+    height: 13px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* -- Loading Spinner --------------------------------------- */
+.spinner-btn {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: none;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* -- Filter Bar -------------------------------------------- */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.filter-bar .form-control,
+.filter-bar .form-select {
+    max-width: 240px;
+}
+
+/* -- Data count -------------------------------------------- */
+.data-count {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    padding: 8px 0;
+}
+
+/* ============================================================
+   6. UTILITY CLASSES
+   ============================================================ */
+.text-muted-custom { color: var(--text-muted); }
+.fw-600  { font-weight: 600; }
+.fw-700  { font-weight: 700; }
+.fs-12   { font-size: 12px; }
+.fs-13   { font-size: 13px; }
+.fs-14   { font-size: 14px; }

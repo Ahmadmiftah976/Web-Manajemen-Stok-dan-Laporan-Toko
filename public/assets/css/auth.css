@@ -1,0 +1,261 @@
+/*
+ * Lokasi: public/assets/css/auth.css
+ * Deskripsi: Styling khusus halaman Login.
+ * Diload di: layouts/auth.php
+ */
+
+/* ============================================================
+   1. BODY & BACKGROUND
+   ============================================================ */
+.auth-body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-page);
+    position: relative;
+}
+
+/* Subtle gradient background */
+.auth-body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        linear-gradient(135deg, var(--primary-800) 0%, var(--primary-800) 40%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ============================================================
+   2. CARD
+   ============================================================ */
+.auth-card {
+    position: relative;
+    z-index: 1;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 420px;
+    padding: 40px 36px;
+}
+
+/* ============================================================
+   3. BRAND / LOGO
+   ============================================================ */
+.auth-brand {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.auth-brand-icon {
+    width: 64px; height: 64px;
+    border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.auth-brand-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+}
+
+.auth-brand-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-dark);
+    letter-spacing: -0.5px;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.auth-brand-name span {
+    color: var(--accent-600);
+}
+
+.auth-brand-tagline {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Garis pemisah */
+.auth-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 24px;
+}
+
+/* ============================================================
+   4. FORM
+   ============================================================ */
+
+/* Wrapper input dengan icon di kiri */
+.auth-input-wrapper {
+    position: relative;
+}
+
+.auth-input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+}
+
+.auth-input-icon svg {
+    width: 15px; height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Geser teks input agar tidak ketutup icon */
+.auth-input-wrapper .form-control {
+    padding-left: 38px;
+}
+
+/* Warnai icon saat input fokus */
+.auth-input-wrapper:focus-within .auth-input-icon {
+    color: var(--accent-600);
+}
+
+/* Tombol toggle show/hide password */
+.auth-toggle-pw {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-light);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+}
+
+.auth-toggle-pw svg {
+    width: 15px; height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.auth-toggle-pw:hover { color: var(--accent-600); }
+
+/* ============================================================
+   5. SUBMIT BUTTON
+   ============================================================ */
+.auth-btn-submit {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+    background-color: var(--primary-800);
+    border-color: var(--primary-800);
+    border-radius: var(--radius-sm);
+    color: #ffffff !important;
+    transition: background-color 0.15s;
+}
+
+.auth-btn-submit:hover {
+    background-color: var(--primary-900);
+    border-color: var(--primary-900);
+}
+
+.auth-btn-submit svg {
+    width: 15px; height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ============================================================
+   6. ALERT
+   ============================================================ */
+.auth-alert {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid transparent;
+}
+
+.auth-alert.error {
+    background: var(--danger-100);
+    color: var(--danger-600);
+    border-color: #fecaca;
+}
+
+.auth-alert.success {
+    background: var(--success-100);
+    color: var(--success-600);
+    border-color: #bbf7d0;
+}
+
+.auth-alert.warning {
+    background: var(--warning-100);
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+.auth-alert-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   7. FOOTER
+   ============================================================ */
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* ============================================================
+   8. RESPONSIVE
+   ============================================================ */
+@media (max-width: 480px) {
+    .auth-card {
+        margin: 16px;
+        padding: 28px 24px;
+    }
+
+    .auth-body::before {
+        background: linear-gradient(180deg, var(--primary-800) 0%, var(--primary-800) 30%, transparent 30%);
+    }
+}

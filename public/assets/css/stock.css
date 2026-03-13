@@ -1,0 +1,53 @@
+/* ── stock.css ─────────────────────────────────────────────── */
+/* Styles khusus halaman Manajemen Stok                       */
+
+/* Filter bar override */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Status badge sizes */
+.badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 3px;
+}
+
+/* Low stock row highlight */
+tr.low-stock td {
+    background: #fef9ee;
+}
+
+/* SKU code styling */
+code.fs-12 {
+    background: var(--bg-secondary);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    color: var(--text-primary);
+}
+
+/* Alert styles */
+.alert-warning {
+    background: #fef9ee;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    padding: 10px 14px;
+}
+
+/* Form radio type selector */
+.form-check-label {
+    font-size: 13px;
+}
+
+/* Transfer arrow indicator */
+.transfer-arrow {
+    color: var(--accent-600);
+    font-weight: 700;
+}
