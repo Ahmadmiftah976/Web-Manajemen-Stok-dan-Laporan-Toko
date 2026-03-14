@@ -139,6 +139,16 @@
         <span><?= number_format($transaction['total_amount'], 0, ',', '.') ?></span>
     </div>
 
+    <?php if (($transaction['payment_method'] ?? 'tunai') === 'qris'): ?>
+    <div class="row-flex mb-1">
+        <span>Pembayaran</span>
+        <span>QRIS</span>
+    </div>
+    <div class="row-flex">
+        <span>Status</span>
+        <span><?= ($transaction['payment_status'] === 'paid') ? 'Lunas' : 'Menunggu' ?></span>
+    </div>
+    <?php else: ?>
     <div class="row-flex mb-1">
         <span>Tunai</span>
         <span><?= number_format($transaction['amount_paid'], 0, ',', '.') ?></span>
@@ -147,6 +157,7 @@
         <span>Kembali</span>
         <span><?= number_format($transaction['change_amount'], 0, ',', '.') ?></span>
     </div>
+    <?php endif; ?>
 
     <div class="text-center mt-3" style="margin-top: 15px; font-size: 11px;">
         <p>Terima Kasih!</p>

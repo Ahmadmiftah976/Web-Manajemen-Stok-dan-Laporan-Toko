@@ -132,7 +132,25 @@
                     <input type="radio" class="btn-check payment-method-radio" name="payment_method" id="payQris" value="qris">
                     <label class="btn btn-outline-success flex-fill d-flex align-items-center justify-content-center py-2" for="payQris">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="me-2">
-                            <path d="M2 5h2v14H2zm4 0h1v14H6zm3 0h3v14H9zm5 0h2v14h-2zm4 0h3v14h-3z"/>
+                            <!-- Tiga kotak sudut khas QR Code -->
+                            <rect x="1" y="1" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <rect x="3" y="3" width="4" height="4"/>
+                            <rect x="15" y="1" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <rect x="17" y="3" width="4" height="4"/>
+                            <rect x="1" y="15" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <rect x="3" y="17" width="4" height="4"/>
+                            <!-- Data dots -->
+                            <rect x="11" y="1" width="2" height="2"/>
+                            <rect x="11" y="5" width="2" height="2"/>
+                            <rect x="11" y="11" width="2" height="2"/>
+                            <rect x="15" y="11" width="2" height="2"/>
+                            <rect x="19" y="11" width="2" height="2"/>
+                            <rect x="11" y="15" width="2" height="2"/>
+                            <rect x="15" y="15" width="2" height="2"/>
+                            <rect x="19" y="15" width="2" height="2"/>
+                            <rect x="15" y="19" width="2" height="2"/>
+                            <rect x="11" y="19" width="2" height="2"/>
+                            <rect x="19" y="19" width="4" height="4"/>
                         </svg>
                         <span class="fw-600">QRIS</span>
                     </label>
@@ -154,6 +172,8 @@
         <div class="pos-cart-actions">
             <!-- Simpan nilai URL dasar JS untuk fetch api call -->
             <script>const APP_URL = "<?= APP_URL ?>";</script>
+            <!-- Midtrans Snap.js -->
+            <script src="<?= MIDTRANS_SNAP_JS ?>" data-client-key="<?= MIDTRANS_CLIENT_KEY ?>"></script>
             <button class="btn btn-primary btn-pay" id="btnPay" disabled>BAYAR (TUNAI)</button>
         </div>
     </div>

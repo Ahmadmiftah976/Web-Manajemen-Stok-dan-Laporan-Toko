@@ -57,6 +57,7 @@ class Router
         // Payment
         'POST /payment/create-qris'      => ['PaymentController',    'createQris'],
         'POST /payment/webhook'          => ['PaymentController',    'webhook'],
+        'POST /payment/cancel'           => ['PaymentController',    'cancelPayment'],
         'GET /payment/status'           => ['PaymentController',    'checkStatus'],
 
         // Reports

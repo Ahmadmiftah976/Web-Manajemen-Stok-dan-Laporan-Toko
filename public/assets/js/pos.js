@@ -224,71 +224,244 @@ document.addEventListener('DOMContentLoaded', () => {
         let discountVal = parseNumber(discountInput.value);
         let total = subtotal - discountVal;
 
-        let paid = 0;
-        let change = 0;
-
-        if (paymentMethod === 'tunai') {
-            paid = parseNumber(paidInput.value);
-            if (paid < total) {
-                alert('Uang yang dimasukkan kurang dari total belanja.');
-                paidInput.focus();
-                return;
-            }
-            change = paid - total;
-        } else if (paymentMethod === 'qris') {
-            paid = total;
-            change = 0;
-            // TODO: Nanti integrasi API Midtrans SNAP akan dipanggil di sini untuk generate QRIS
-        }
-
-        const payload = {
-            warehouse_id: parseInt(warehouseSelect.value),
-            total_amount: total,
-            discount_amount: discountVal,
-            amount_paid: paid,
-            change_amount: change,
-            payment_method: paymentMethod,
-            notes: '',
-            cart: cart.map(i => ({
-                id: i.id,
-                qty: i.qty,
-                price: i.price,
-                harga_beli: i.harga_beli
-            }))
-        };
+        const cartPayload = cart.map(i => ({
+            id: i.id,
+            qty: i.qty,
+            price: i.price,
+            harga_beli: i.harga_beli
+        }));
 
         btnPay.disabled = true;
         btnPay.innerHTML = '<span class="spinner-btn" style="display:inline-block"></span> Memproses...';
 
-        try {
-            const response = await fetch(APP_URL + '/kasir/checkout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            const result = await response.json();
-
-            if (result.status === 'success') {
-                // Arahkan ke halaman struk
-                window.location.href = APP_URL + `/kasir/receipt?id=${result.data.transaction_id}`;
-            } else {
-                alert('Gagal: ' + result.message);
+        // ─── Alur TUNAI ─────────────────────────────────────────────
+        if (paymentMethod === 'tunai') {
+            let paid = parseNumber(paidInput.value);
+            if (paid < total) {
+                alert('Uang yang dimasukkan kurang dari total belanja.');
+                paidInput.focus();
                 btnPay.disabled = false;
-                btnPay.innerHTML = paymentMethod === 'qris' ? 'BAYAR (QRIS)' : 'BAYAR (TUNAI)';
+                btnPay.innerHTML = 'BAYAR (TUNAI)';
+                return;
             }
 
-        } catch (error) {
-            console.error('Checkout error:', error);
-            alert('Terjadi kesalahan koneksi server.');
-            btnPay.disabled = false;
-            btnPay.innerHTML = paymentMethod === 'qris' ? 'BAYAR (QRIS)' : 'BAYAR (TUNAI)';
+            const payload = {
+                warehouse_id: parseInt(warehouseSelect.value),
+                total_amount: total,
+                discount_amount: discountVal,
+                amount_paid: paid,
+                change_amount: paid - total,
+                payment_method: 'tunai',
+                notes: '',
+                cart: cartPayload
+            };
+
+            try {
+                const response = await fetch(APP_URL + '/kasir/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    window.location.href = APP_URL + `/kasir/receipt?id=${result.data.transaction_id}`;
+                } else {
+                    alert('Gagal: ' + result.message);
+                    btnPay.disabled = false;
+                    btnPay.innerHTML = 'BAYAR (TUNAI)';
+                }
+            } catch (error) {
+                console.error('Checkout error:', error);
+                alert('Terjadi kesalahan koneksi server.');
+                btnPay.disabled = false;
+                btnPay.innerHTML = 'BAYAR (TUNAI)';
+            }
+            return;
+        }
+
+        // ─── Alur QRIS (Midtrans Snap) ──────────────────────────────
+        if (paymentMethod === 'qris') {
+            const payload = {
+                warehouse_id: parseInt(warehouseSelect.value),
+                total_amount: total,
+                discount_amount: discountVal,
+                cart: cartPayload
+            };
+
+            try {
+                // 1. Request Snap Token dari backend
+                const response = await fetch(APP_URL + '/payment/create-qris', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.status !== 'success') {
+                    alert('Gagal membuat pembayaran QRIS: ' + result.message);
+                    btnPay.disabled = false;
+                    btnPay.innerHTML = 'BAYAR (QRIS)';
+                    return;
+                }
+
+                const { snap_token, order_id, transaction_id } = result.data;
+
+                // 2. Buka pop-up Midtrans Snap
+                window.snap.pay(snap_token, {
+                    onSuccess: function(result) {
+                        // Pembayaran berhasil, redirect ke struk
+                        window.location.href = APP_URL + `/kasir/receipt?id=${transaction_id}`;
+                    },
+                    onPending: function(result) {
+                        // QR sudah di-scan tapi belum settle, tampilkan opsi
+                        showWaitingUI(snap_token, order_id, transaction_id);
+                    },
+                    onError: function(result) {
+                        alert('Pembayaran gagal. Silakan coba lagi.');
+                        btnPay.disabled = false;
+                        btnPay.innerHTML = 'BAYAR (QRIS)';
+                    },
+                    onClose: function() {
+                        // User menutup popup → tampilkan opsi: buka ulang QR atau batalkan
+                        showWaitingUI(snap_token, order_id, transaction_id);
+                    }
+                });
+
+            } catch (error) {
+                console.error('QRIS checkout error:', error);
+                alert('Terjadi kesalahan koneksi server.');
+                btnPay.disabled = false;
+                btnPay.innerHTML = 'BAYAR (QRIS)';
+            }
         }
     });
+
+    // ── 5. Waiting UI (setelah popup Snap ditutup) ──────────────────
+    let activePollingInterval = null;
+
+    function showWaitingUI(snapToken, orderId, transactionId) {
+        // Hentikan polling sebelumnya jika ada
+        if (activePollingInterval) clearInterval(activePollingInterval);
+
+        // Tampilkan tombol aksi di area pos-cart-actions
+        const actionsArea = document.querySelector('.pos-cart-actions');
+        actionsArea.innerHTML = `
+            <div class="qris-waiting-panel" style="display:flex; flex-direction:column; gap:8px; width:100%;">
+                <div style="text-align:center; font-size:13px; color:#64748b; padding:6px 0;">
+                    <span class="spinner-btn" style="display:inline-block; width:14px; height:14px; vertical-align:middle; margin-right:6px;"></span>
+                    Menunggu pembayaran QRIS...
+                </div>
+                <button class="btn btn-primary btn-pay" id="btnReopenQR" style="font-size:14px; padding:10px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px; margin-right:6px;">
+                        <rect x="1" y="1" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <rect x="3" y="3" width="4" height="4"/>
+                        <rect x="15" y="1" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <rect x="17" y="3" width="4" height="4"/>
+                        <rect x="1" y="15" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <rect x="3" y="17" width="4" height="4"/>
+                    </svg>
+                    Tampilkan Ulang QR Code
+                </button>
+                <button class="btn btn-pay" id="btnCancelQris" style="font-size:13px; padding:8px; background:#e2e8f0; color:#475569;">
+                    Batalkan Transaksi
+                </button>
+            </div>
+        `;
+
+        // Event: Buka ulang Snap popup
+        document.getElementById('btnReopenQR').addEventListener('click', () => {
+            if (activePollingInterval) clearInterval(activePollingInterval);
+            window.snap.pay(snapToken, {
+                onSuccess: function() {
+                    window.location.href = APP_URL + `/kasir/receipt?id=${transactionId}`;
+                },
+                onPending: function() {
+                    startBackgroundPolling(orderId, transactionId);
+                    showWaitingUI(snapToken, orderId, transactionId);
+                },
+                onError: function() {
+                    alert('Pembayaran gagal.');
+                    resetToNormal();
+                },
+                onClose: function() {
+                    showWaitingUI(snapToken, orderId, transactionId);
+                }
+            });
+        });
+
+        // Event: Batalkan transaksi
+        document.getElementById('btnCancelQris').addEventListener('click', async () => {
+            if (!confirm('Yakin ingin membatalkan transaksi QRIS ini?')) return;
+            if (activePollingInterval) clearInterval(activePollingInterval);
+
+            try {
+                await fetch(APP_URL + '/payment/cancel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: orderId })
+                });
+            } catch (e) {
+                // Tetap lanjutkan reset meskipun cancel gagal
+                console.error('Cancel error:', e);
+            }
+
+            resetToNormal();
+        });
+
+        // Mulai polling di background
+        startBackgroundPolling(orderId, transactionId);
+    }
+
+    function startBackgroundPolling(orderId, transactionId) {
+        if (activePollingInterval) clearInterval(activePollingInterval);
+
+        let attempts = 0;
+        const maxAttempts = 100; // ~5 menit
+
+        activePollingInterval = setInterval(async () => {
+            attempts++;
+            try {
+                const res = await fetch(APP_URL + `/payment/status?order_id=${orderId}`);
+                const data = await res.json();
+
+                if (data.status === 'success' && data.data.payment_status === 'paid') {
+                    clearInterval(activePollingInterval);
+                    window.location.href = APP_URL + `/kasir/receipt?id=${transactionId}`;
+                } else if (data.data && data.data.payment_status === 'failed') {
+                    clearInterval(activePollingInterval);
+                    alert('Pembayaran QRIS dibatalkan atau expired.');
+                    resetToNormal();
+                }
+            } catch (e) {
+                console.error('Polling error:', e);
+            }
+
+            if (attempts >= maxAttempts) {
+                clearInterval(activePollingInterval);
+                alert('Waktu menunggu pembayaran habis.');
+                resetToNormal();
+            }
+        }, 3000);
+    }
+
+    function resetToNormal() {
+        if (activePollingInterval) {
+            clearInterval(activePollingInterval);
+            activePollingInterval = null;
+        }
+        // Kembalikan tombol bayar ke keadaan semula
+        const actionsArea = document.querySelector('.pos-cart-actions');
+        actionsArea.innerHTML = `
+            <script>const APP_URL = "${APP_URL}";</script>
+            <script src="${document.querySelector('script[data-client-key]')?.src || ''}" data-client-key="${document.querySelector('script[data-client-key]')?.getAttribute('data-client-key') || ''}"></script>
+            <button class="btn btn-primary btn-pay" id="btnPay" ${cart.length === 0 ? 'disabled' : ''}>BAYAR (QRIS)</button>
+        `;
+        // Reload halaman agar state bersih (keranjang tetap kosong setelah transaksi dibatalkan)
+        window.location.reload();
+    }
 
     // Initial render
     renderCart();
 });
+

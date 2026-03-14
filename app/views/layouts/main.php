@@ -13,7 +13,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
     <!-- CSS Aplikasi -->
-    <?php $cssVersion = '20260310'; ?>
+    <?php $cssVersion = '20260315b'; ?>
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/app.css?v=<?= $cssVersion ?>">
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/layout.css?v=<?= $cssVersion ?>">
 
@@ -223,7 +223,7 @@
 <!-- JS tambahan per halaman (opsional, di-set dari controller) -->
 <?php if (!empty($extraJs)): ?>
     <?php foreach ((array)$extraJs as $js): ?>
-        <script src="<?= APP_URL ?>/assets/js/<?= htmlspecialchars($js) ?>"></script>
+        <script src="<?= APP_URL ?>/assets/js/<?= htmlspecialchars($js) ?>?v=<?= $cssVersion ?>"></script>
     <?php endforeach; ?>
 <?php endif; ?>
 

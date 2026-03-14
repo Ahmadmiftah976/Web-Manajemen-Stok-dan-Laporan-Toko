@@ -66,3 +66,14 @@ define('CONFIG_PATH',  BASE_PATH . '/config');
 define('CORE_PATH',    BASE_PATH . '/core');
 define('STORAGE_PATH', BASE_PATH . '/storage');
 define('VIEW_PATH',    APP_PATH  . '/views');
+
+// Midtrans
+define('MIDTRANS_SERVER_KEY',    env('MIDTRANS_SERVER_KEY', ''));
+define('MIDTRANS_CLIENT_KEY',    env('MIDTRANS_CLIENT_KEY', ''));
+define('MIDTRANS_IS_PRODUCTION', env('MIDTRANS_ENV', 'sandbox') === 'production');
+define('MIDTRANS_SNAP_URL',      MIDTRANS_IS_PRODUCTION
+    ? 'https://app.midtrans.com/snap/v1/transactions'
+    : 'https://app.sandbox.midtrans.com/snap/v1/transactions');
+define('MIDTRANS_SNAP_JS',       MIDTRANS_IS_PRODUCTION
+    ? 'https://app.midtrans.com/snap/snap.js'
+    : 'https://app.sandbox.midtrans.com/snap/snap.js');
