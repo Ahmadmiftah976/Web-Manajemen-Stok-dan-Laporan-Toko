@@ -50,11 +50,9 @@ class Router
         'GET /stock/history'            => ['StockController',       'history'],
 
         // Kasir
-        'GET /kasir'                    => ['TransactionController', 'index'],
-        'POST /kasir/add-item'           => ['TransactionController', 'addItem'],
-        'POST /kasir/remove-item'        => ['TransactionController', 'removeItem'],
-        'POST /kasir/checkout'           => ['TransactionController', 'checkout'],
-        'GET /kasir/receipt'            => ['TransactionController', 'receipt'],
+        'GET /kasir'                    => ['KasirController',       'index'],
+        'POST /kasir/checkout'          => ['KasirController',       'checkout'],
+        'GET /kasir/receipt'            => ['KasirController',       'receipt'],
 
         // Payment
         'POST /payment/create-qris'      => ['PaymentController',    'createQris'],
