@@ -34,9 +34,10 @@ class StockController extends Controller
         $warehouses    = $this->warehouseModel->getAllActive();
         $warehouseId   = (int) ($this->query('warehouse') ?? ($warehouses[0]['id'] ?? 0));
         $search        = $this->query('search', '');
+        $status        = $this->query('status', '');
 
         $stocks   = $warehouseId > 0
-            ? $this->stockModel->getStockByWarehouse($warehouseId, $search)
+            ? $this->stockModel->getStockByWarehouse($warehouseId, $search, $status)
             : [];
         $lowStock = $this->stockModel->getLowStock();
 
@@ -48,6 +49,7 @@ class StockController extends Controller
             'stocks'      => $stocks,
             'lowStock'    => $lowStock,
             'search'      => $search,
+            'status'      => $status,
             'extraCss'    => ['stock.css'],
         ]);
     }
@@ -64,12 +66,17 @@ class StockController extends Controller
         $warehouses = $this->warehouseModel->getAllActive();
         $products   = $this->productModel->getAllActive();
 
+        $selectedProductId   = (int) $this->query('product_id', 0);
+        $selectedWarehouseId = (int) $this->query('warehouse_id', 0);
+
         $this->view('stock/add', [
-            'title'      => 'Stok Masuk / Keluar — ' . APP_NAME,
-            'pageTitle'  => 'Stok Masuk / Keluar',
-            'warehouses' => $warehouses,
-            'products'   => $products,
-            'extraCss'   => ['stock.css'],
+            'title'               => 'Stok Masuk / Keluar — ' . APP_NAME,
+            'pageTitle'           => 'Stok Masuk / Keluar',
+            'warehouses'          => $warehouses,
+            'products'            => $products,
+            'selectedProductId'   => $selectedProductId,
+            'selectedWarehouseId' => $selectedWarehouseId,
+            'extraCss'            => ['stock.css'],
         ]);
     }
 

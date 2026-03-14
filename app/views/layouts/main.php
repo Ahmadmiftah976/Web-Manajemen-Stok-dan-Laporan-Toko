@@ -7,6 +7,10 @@
 
     <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
     <!-- CSS Aplikasi -->
     <?php $cssVersion = '20260310'; ?>
@@ -156,7 +160,7 @@
                     <div class="notif-dropdown-header">Notifikasi Stok</div>
                     <?php if ($lowStockCount > 0): ?>
                         <?php foreach ($lowStockItems as $item): ?>
-                        <a href="<?= APP_URL ?>/stock" class="notif-dropdown-item">
+                        <a href="<?= APP_URL ?>/stock/add?product_id=<?= $item['id'] ?>&warehouse_id=<?= $item['warehouse_id'] ?>" class="notif-dropdown-item">
                             <div class="notif-item-title"><?= htmlspecialchars($item['name']) ?></div>
                             <div class="notif-item-detail">
                                 <?= htmlspecialchars($item['warehouse_name']) ?> —
@@ -193,9 +197,9 @@
                 'warning' => 'alert-warning',
                 default   => 'alert-info',
             }; ?>
-            <div class="flash-alert alert <?= $alertClass ?> alert-dismissible fade show" role="alert">
-                <?= htmlspecialchars($flash['message']) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="flash-alert alert <?= $alertClass ?> fade show d-flex align-items-center justify-content-between pe-3" role="alert">
+                <div class="mb-0 flex-grow-1"><?= htmlspecialchars($flash['message']) ?></div>
+                <button type="button" class="btn-close position-static m-0" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
 
@@ -204,8 +208,14 @@
     </main>
 </div>
 
+<!-- jQuery (required for Select2) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 <!-- Bootstrap JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <!-- JS Global -->
 <script src="<?= APP_URL ?>/assets/js/app.js"></script>

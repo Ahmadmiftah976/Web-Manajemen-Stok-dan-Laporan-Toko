@@ -54,7 +54,7 @@
                     <select id="product_id" name="product_id" class="form-select" required>
                         <option value="">— Pilih Produk —</option>
                         <?php foreach ($products as $p): ?>
-                            <option value="<?= $p['id'] ?>">
+                            <option value="<?= $p['id'] ?>" <?= (isset($selectedProductId) && $selectedProductId === $p['id']) ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($p['name']) ?> (<?= htmlspecialchars($p['sku']) ?>)
                             </option>
                         <?php endforeach; ?>
@@ -67,7 +67,7 @@
                     <select id="warehouse_id" name="warehouse_id" class="form-select" required>
                         <option value="">— Pilih Gudang —</option>
                         <?php foreach ($warehouses as $w): ?>
-                            <option value="<?= $w['id'] ?>">
+                            <option value="<?= $w['id'] ?>" <?= (isset($selectedWarehouseId) && $selectedWarehouseId === $w['id']) ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($w['name']) ?> — <?= htmlspecialchars($w['location']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -97,3 +97,19 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    $('#product_id').select2({
+        theme: 'bootstrap-5',
+        placeholder: '— Cari Produk —',
+        width: '100%'
+    });
+    
+    $('#warehouse_id').select2({
+        theme: 'bootstrap-5',
+        placeholder: '— Pilih Gudang —',
+        width: '100%'
+    });
+});
+</script>

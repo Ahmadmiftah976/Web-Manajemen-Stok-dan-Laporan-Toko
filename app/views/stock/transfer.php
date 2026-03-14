@@ -85,3 +85,25 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    $('#product_id').select2({
+        theme: 'bootstrap-5',
+        placeholder: '— Cari Produk —',
+        width: '100%'
+    });
+    
+    $('#from_warehouse_id').select2({
+        theme: 'bootstrap-5',
+        placeholder: '— Pilih Gudang Asal —',
+        width: '100%'
+    });
+    
+    $('#to_warehouse_id').select2({
+        theme: 'bootstrap-5',
+        placeholder: '— Pilih Gudang Tujuan —',
+        width: '100%'
+    });
+});
+</script>

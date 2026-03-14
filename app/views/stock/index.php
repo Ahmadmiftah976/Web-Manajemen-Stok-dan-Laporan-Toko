@@ -12,13 +12,9 @@
         <div class="page-header-subtitle">Pantau stok produk di setiap gudang</div>
     </div>
     <div class="d-flex gap-2">
-        <a href="<?= APP_URL ?>/stock/add" class="btn btn-primary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Stok Masuk / Keluar
-        </a>
-        <a href="<?= APP_URL ?>/stock/transfer" class="btn btn-outline-primary">
+        <a href="<?= APP_URL ?>/stock/transfer" class="btn btn-primary">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-            Transfer
+            Transfer Stok
         </a>
         <a href="<?= APP_URL ?>/stock/history" class="btn btn-outline-secondary">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -45,6 +41,12 @@
                         <?= htmlspecialchars($w['name']) ?>
                     </option>
                 <?php endforeach; ?>
+            </select>
+            <select name="status" class="form-select" style="max-width:150px;" onchange="this.form.submit()">
+                <option value="">Semua Status</option>
+                <option value="aman" <?= (isset($status) && $status === 'aman') ? 'selected' : '' ?>>Aman</option>
+                <option value="menipis" <?= (isset($status) && $status === 'menipis') ? 'selected' : '' ?>>Menipis</option>
+                <option value="habis" <?= (isset($status) && $status === 'habis') ? 'selected' : '' ?>>Habis</option>
             </select>
             <div class="input-group" style="max-width:250px;">
                 <span class="input-group-text bg-white border-end-0">
@@ -89,7 +91,11 @@
                     <?php foreach ($stocks as $s): ?>
                     <?php $isLow = $s['quantity'] < $s['stok_minimum']; ?>
                     <tr>
-                        <td class="fw-600"><?= htmlspecialchars($s['product_name']) ?></td>
+                        <td class="fw-600">
+                            <a href="<?= APP_URL ?>/stock/add?product_id=<?= $s['product_id'] ?>&warehouse_id=<?= $warehouseId ?>" class="text-decoration-none text-primary">
+                                <?= htmlspecialchars($s['product_name']) ?>
+                            </a>
+                        </td>
                         <td><code class="fs-12"><?= htmlspecialchars($s['sku']) ?></code></td>
                         <td>
                             <?php if (!empty($s['category'])): ?>

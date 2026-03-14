@@ -14,8 +14,9 @@ class Stock extends Model
 
     /**
      * Ambil stok per gudang tertentu, join dengan data produk.
+     * Menerima opsi filter pencarian dan status ('aman', 'menipis', 'habis').
      */
-    public function getStockByWarehouse(int $warehouseId, string $search = ''): array
+    public function getStockByWarehouse(int $warehouseId, string $search = '', string $status = ''): array
     {
         $sql = "SELECT p.id AS product_id, p.name AS product_name, p.sku, p.category,
                        p.harga_jual, p.stok_minimum,
@@ -29,6 +30,14 @@ class Stock extends Model
             $sql .= " AND (LOWER(p.name) LIKE LOWER(:search) OR LOWER(p.sku) LIKE LOWER(:search2))";
             $params[':search']  = "%{$search}%";
             $params[':search2'] = "%{$search}%";
+        }
+
+        if ($status === 'habis') {
+            $sql .= " AND COALESCE(s.quantity, 0) <= 0";
+        } elseif ($status === 'menipis') {
+            $sql .= " AND COALESCE(s.quantity, 0) > 0 AND COALESCE(s.quantity, 0) < p.stok_minimum";
+        } elseif ($status === 'aman') {
+            $sql .= " AND COALESCE(s.quantity, 0) >= p.stok_minimum";
         }
 
         $sql .= " ORDER BY p.name ASC";
@@ -60,6 +69,7 @@ class Stock extends Model
     {
         return $this->query(
             "SELECT p.id, p.name, p.sku, p.stok_minimum,
+                    w.id AS warehouse_id,
                     w.name AS warehouse_name,
                     COALESCE(s.quantity, 0) AS total_stock
              FROM   products p
