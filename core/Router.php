@@ -25,53 +25,55 @@ class Router
      */
     private array $routes = [
         // Auth
-        'GET /login'                    => ['AuthController',        'loginPage'],
-        'POST /login'                    => ['AuthController',        'login'],
-        'GET /logout'                   => ['AuthController',        'logout'],
+        'GET /login' => ['AuthController', 'loginPage'],
+        'POST /login' => ['AuthController', 'login'],
+        'GET /logout' => ['AuthController', 'logout'],
 
         // Dashboard
-        'GET /'                         => ['DashboardController',   'index'],
-        'GET /dashboard'                => ['DashboardController',   'index'],
+        'GET /' => ['DashboardController', 'index'],
+        'GET /dashboard' => ['DashboardController', 'index'],
 
         // Products
-        'GET /products'                 => ['ProductController',     'index'],
-        'GET /products/create'          => ['ProductController',     'create'],
-        'POST /products/store'           => ['ProductController',     'store'],
-        'GET /products/edit'            => ['ProductController',     'edit'],
-        'POST /products/update'          => ['ProductController',     'update'],
-        'POST /products/delete'          => ['ProductController',     'delete'],
+        'GET /products' => ['ProductController', 'index'],
+        'GET /products/create' => ['ProductController', 'create'],
+        'POST /products/store' => ['ProductController', 'store'],
+        'GET /products/edit' => ['ProductController', 'edit'],
+        'POST /products/update' => ['ProductController', 'update'],
+        'POST /products/delete' => ['ProductController', 'delete'],
 
         // Stock
-        'GET /stock'                    => ['StockController',       'index'],
-        'GET /stock/add'                => ['StockController',       'addPage'],
-        'POST /stock/add'                => ['StockController',       'add'],
-        'GET /stock/transfer'           => ['StockController',       'transferPage'],
-        'POST /stock/transfer'           => ['StockController',       'transfer'],
-        'GET /stock/history'            => ['StockController',       'history'],
+        'GET /stock' => ['StockController', 'index'],
+        'GET /stock/add' => ['StockController', 'addPage'],
+        'POST /stock/add' => ['StockController', 'add'],
+        'GET /stock/transfer' => ['StockController', 'transferPage'],
+        'POST /stock/transfer' => ['StockController', 'transfer'],
+        'GET /stock/history' => ['StockController', 'history'],
 
         // Kasir
-        'GET /kasir'                    => ['KasirController',       'index'],
-        'POST /kasir/checkout'          => ['KasirController',       'checkout'],
-        'GET /kasir/receipt'            => ['KasirController',       'receipt'],
+        'GET /kasir' => ['KasirController', 'index'],
+        'POST /kasir/checkout' => ['KasirController', 'checkout'],
+        'GET /kasir/receipt' => ['KasirController', 'receipt'],
 
         // Payment
-        'POST /payment/create-qris'      => ['PaymentController',    'createQris'],
-        'POST /payment/webhook'          => ['PaymentController',    'webhook'],
-        'POST /payment/cancel'           => ['PaymentController',    'cancelPayment'],
-        'GET /payment/status'           => ['PaymentController',    'checkStatus'],
+        'POST /payment/create-qris' => ['PaymentController', 'createQris'],
+        'POST /payment/webhook' => ['PaymentController', 'webhook'],
+        'POST /payment/cancel' => ['PaymentController', 'cancelPayment'],
+        'GET /payment/status' => ['PaymentController', 'checkStatus'],
 
         // Reports
-        'GET /reports/sales'            => ['ReportController',     'sales'],
-        'GET /reports/profit'           => ['ReportController',     'profit'],
-        'GET /reports/export'           => ['ReportController',     'export'],
+        'GET /reports/sales' => ['ReportController', 'sales'],
+        'GET /reports/profit' => ['ReportController', 'profit'],
+        'GET /reports/export' => ['ReportController', 'export'],
 
         // Users (pemilik only)
-        'GET /users'                    => ['UserController',       'index'],
-        'GET /users/create'             => ['UserController',       'create'],
-        'POST /users/store'              => ['UserController',       'store'],
-        'GET /users/edit'               => ['UserController',       'edit'],
-        'POST /users/update'             => ['UserController',       'update'],
-        'POST /users/delete'             => ['UserController',       'delete'],
+        'GET /users' => ['UserController', 'index'],
+        'GET /users/inactive' => ['UserController', 'inactive'],
+        'GET /users/create' => ['UserController', 'create'],
+        'POST /users/store' => ['UserController', 'store'],
+        'GET /users/edit' => ['UserController', 'edit'],
+        'POST /users/update' => ['UserController', 'update'],
+        'POST /users/delete' => ['UserController', 'delete'],
+        'POST /users/activate' => ['UserController', 'activate'],
     ];
 
     /**
@@ -80,7 +82,7 @@ class Router
     public function dispatch(): void
     {
         $method = $_SERVER['REQUEST_METHOD'];
-        $uri    = $this->parseUri();
+        $uri = $this->parseUri();
 
         $routeKey = "$method $uri";
 
@@ -94,8 +96,8 @@ class Router
         // ── Fallback: parsing otomatis /controller/method/param ───────────
         $segments = explode('/', ltrim($uri, '/'));
         $controllerName = $this->toPascalCase($segments[0] ?? 'dashboard') . 'Controller';
-        $methodName     = $segments[1] ?? 'index';
-        $params         = array_slice($segments, 2);
+        $methodName = $segments[1] ?? 'index';
+        $params = array_slice($segments, 2);
 
         $this->run($controllerName, $methodName, $params);
     }
@@ -167,7 +169,8 @@ class Router
         http_response_code(404);
         if (APP_ENV === 'development') {
             echo "<h1>404 - Tidak Ditemukan</h1><p>$detail</p>";
-        } else {
+        }
+        else {
             echo "<h1>404 - Halaman Tidak Ditemukan</h1>";
         }
         exit;

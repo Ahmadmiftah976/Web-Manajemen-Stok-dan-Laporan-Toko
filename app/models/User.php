@@ -25,26 +25,39 @@ class User extends Model
     }
 
     /**
+     * Ambil semua user nonaktif.
+     */
+    public function getAllInactive(): array
+    {
+        return $this->query(
+            "SELECT id, name, email, role, created_at
+             FROM   users
+             WHERE  is_active = FALSE
+             ORDER  BY created_at DESC"
+        );
+    }
+
+    /**
      * Cari user berdasarkan email (untuk proses login).
      */
-    public function findByEmail(string $email): array|false
+    public function findByEmail(string $email): array |false
     {
         return $this->queryOne(
             "SELECT * FROM users WHERE email = :email AND is_active = TRUE LIMIT 1",
-            [':email' => $email]
+        [':email' => $email]
         );
     }
 
     /**
      * Cari user berdasarkan ID (hanya kolom aman, tanpa password_hash).
      */
-    public function findById(int $id): array|false
+    public function findById(int $id): array |false
     {
         return $this->queryOne(
             "SELECT id, name, email, role, is_active, created_at
              FROM   users
              WHERE  id = :id LIMIT 1",
-            [':id' => $id]
+        [':id' => $id]
         );
     }
 
@@ -54,7 +67,7 @@ class User extends Model
      * Verifikasi email + password.
      * Mengembalikan data user jika valid, false jika tidak.
      */
-    public function verifyCredentials(string $email, string $password): array|false
+    public function verifyCredentials(string $email, string $password): array |false
     {
         $user = $this->findByEmail($email);
 
@@ -78,10 +91,10 @@ class User extends Model
     public function createUser(array $data): int
     {
         return $this->insert([
-            'name'          => $data['name'],
-            'email'         => $data['email'],
+            'name' => $data['name'],
+            'email' => $data['email'],
             'password_hash' => password_hash($data['password'], PASSWORD_BCRYPT, ['cost' => 12]),
-            'role'          => $data['role'] ?? 'kasir',
+            'role' => $data['role'] ?? 'kasir',
         ]);
     }
 
@@ -91,9 +104,9 @@ class User extends Model
     public function updateUser(int $id, array $data): int
     {
         return $this->update($id, [
-            'name'  => $data['name'],
+            'name' => $data['name'],
             'email' => $data['email'],
-            'role'  => $data['role'],
+            'role' => $data['role'],
         ]);
     }
 
@@ -112,7 +125,7 @@ class User extends Model
      */
     public function deactivate(int $id): int
     {
-        return $this->update($id, ['is_active' => false]);
+        return $this->update($id, ['is_active' => 'false']);
     }
 
     /**
@@ -120,7 +133,7 @@ class User extends Model
      */
     public function activate(int $id): int
     {
-        return $this->update($id, ['is_active' => true]);
+        return $this->update($id, ['is_active' => 'true']);
     }
 
     // ── Validasi ──────────────────────────────────────────────────────────────
@@ -133,7 +146,7 @@ class User extends Model
     {
         $result = $this->queryOne(
             "SELECT 1 FROM users WHERE email = :email AND id != :id LIMIT 1",
-            [':email' => $email, ':id' => $excludeId]
+        [':email' => $email, ':id' => $excludeId]
         );
         return $result !== false;
     }
