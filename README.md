@@ -320,22 +320,34 @@ Aplikasi menggunakan **7 tabel** utama di PostgreSQL:
               └─────────────────┘
 ```
 
----
-
 ## 📸 Screenshot
 
-> *Tambahkan screenshot tampilan aplikasi Anda di sini.*
+### 1. Halaman Login
+![Halaman Login](public/assets/img/login.png)
 
-<!-- Contoh:
-### Login Page
-![Login](docs/screenshots/login.png)
+### 2. Dashboard Pemilik
+![Dashboard Pemilik](public/assets/img/dashboard_pemilik.png)
 
-### Dashboard Pemilik
-![Dashboard Pemilik](docs/screenshots/dashboard-pemilik.png)
+### 3. Dashboard Kasir
+![Dashboard Kasir](public/assets/img/dashboard_kasir.png)
 
-### Sistem Kasir (POS)
-![POS](docs/screenshots/pos.png)
--->
+### 4. Sistem Kasir (POS)
+![Sistem Kasir](public/assets/img/kasir.png)
+
+### 5. Manajemen Produk
+![Manajemen Produk](public/assets/img/manajemen_produk.png)
+
+### 6. Manajemen Stok
+![Manajemen Stok](public/assets/img/manajemen_stok.png)
+
+### 7. Laporan Penjualan
+![Laporan Penjualan](public/assets/img/laporan_penjualan.png)
+
+### 8. Laporan Laba/Rugi
+![Laporan Laba/Rugi](public/assets/img/laporan_labarugi.png)
+
+### 9. Manajemen Pengguna
+![Manajemen Pengguna](public/assets/img/manajemen_pengguna.png)
 
 ---
 
