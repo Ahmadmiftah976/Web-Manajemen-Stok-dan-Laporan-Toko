@@ -1,6 +1,9 @@
 <div align="center">
 
-# 🕌 MajmaInsight
+<br/>
+<img src="public/assets/img/logo.jpg" width="150" alt="MajmaInsight Logo" style="border-radius: 12px; margin-bottom: 20px;">
+
+# MajmaInsight
 
 ### Sistem Manajemen Stok & Laporan Penjualan Toko Baju Koko
 
