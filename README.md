@@ -351,11 +351,6 @@ Kontribusi sangat diterima! Silakan buat **Pull Request** atau buka **Issue** un
 
 ---
 
-## 📄 Lisensi
-
-Proyek ini dilisensikan di bawah **MIT License** — lihat file [LICENSE](LICENSE) untuk detail.
-
----
 
 <div align="center">
 
