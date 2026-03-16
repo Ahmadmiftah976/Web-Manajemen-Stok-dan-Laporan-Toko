@@ -1,1 +1,27 @@
+# ============================================================
+# MajmaInsight — Git Ignore
+# ============================================================
+
+# ── Environment & Secrets ──────────────────────────────────
 .env
+
+# ── Dependencies ───────────────────────────────────────────
+/vendor/
+
+# ── Storage (runtime files) ────────────────────────────────
+/storage/logs/*
+/storage/exports/*
+!storage/logs/.gitkeep
+!storage/exports/.gitkeep
+
+# ── OS generated files ─────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE / Editor ───────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
