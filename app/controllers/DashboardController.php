@@ -55,6 +55,8 @@ class DashboardController extends Controller
         $cashierId = (int) Auth::user('id');
         $todayTxCount = $this->dashboardModel->getTodayTransactionCount($cashierId);
         $recentTx = $this->dashboardModel->getRecentTransactions(10, $cashierId);
+        $paymentStats = $this->dashboardModel->getPaymentMethodStatsToday($cashierId);
+        $lowStockAlerts = $this->dashboardModel->getLowStockAlerts(5);
 
         $this->view('dashboard/kasir', [
             'title'        => 'Dashboard Kasir — ' . APP_NAME,
@@ -62,6 +64,8 @@ class DashboardController extends Controller
             'extraCss'     => 'dashboard.css',
             'todayTxCount' => $todayTxCount,
             'recentTx'     => $recentTx,
+            'paymentStats' => $paymentStats,
+            'lowStockAlerts' => $lowStockAlerts,
         ]);
     }
 }

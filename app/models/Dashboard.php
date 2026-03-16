@@ -80,7 +80,7 @@ class Dashboard extends Model
         $trend = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = date('Y-m-d', strtotime("-$i days"));
-            $label = date('d Mon', strtotime($date));
+            $label = date('d M', strtotime($date));
             $trend[$date] = [
                 'label' => $label,
                 'total' => 0
@@ -95,6 +95,23 @@ class Dashboard extends Model
         }
 
         return array_values($trend);
+    }
+
+    /**
+     * Data grafik Garis: Pendapatan Harian Bulan Ini (Pengganti Trend 7 Hari di Dashboard)
+     */
+    public function getRevenueByDayThisMonth(): array
+    {
+        $sql = "
+            SELECT DATE(t.transaction_date) AS t_date, SUM(t.total_amount) AS total
+            FROM transactions t
+            WHERE EXTRACT(MONTH FROM t.transaction_date) = EXTRACT(MONTH FROM CURRENT_DATE)
+              AND EXTRACT(YEAR FROM t.transaction_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+              AND t.payment_status = 'paid'
+            GROUP BY DATE(t.transaction_date)
+            ORDER BY t_date ASC
+        ";
+        return $this->query($sql);
     }
 
     /**
@@ -164,5 +181,53 @@ class Dashboard extends Model
         ";
         $result = $this->queryOne($sql);
         return (int) ($result['count'] ?? 0);
+    }
+
+    /**
+     * Kasir: Statistik Metode Pembayaran Hari Ini
+     */
+    public function getPaymentMethodStatsToday(?int $cashierId = null): array
+    {
+        $sql = "
+            SELECT payment_method, COUNT(*) as trx_count, SUM(total_amount) as total
+            FROM transactions
+            WHERE DATE(transaction_date) = CURRENT_DATE
+              AND payment_status = 'paid'
+        ";
+        $params = [];
+        if ($cashierId !== null) {
+            $sql .= " AND cashier_id = :user_id";
+            $params[':user_id'] = $cashierId;
+        }
+        $sql .= " GROUP BY payment_method";
+        
+        $results = $this->query($sql, $params);
+        $stats = ['tunai' => ['count' => 0, 'total' => 0], 'qris' => ['count' => 0, 'total' => 0]];
+        foreach ($results as $r) {
+            $method = strtolower($r['payment_method']);
+            if (isset($stats[$method])) {
+                $stats[$method]['count'] = (int) $r['trx_count'];
+                $stats[$method]['total'] = (float) $r['total'];
+            }
+        }
+        return $stats;
+    }
+
+    /**
+     * Kasir: Alert produk stok menipis (< stok_minimum)
+     */
+    public function getLowStockAlerts(int $limit = 5): array
+    {
+        $sql = "
+            SELECT p.id, p.name, p.stok_minimum, p.sku, COALESCE(SUM(s.quantity), 0) as current_stock
+            FROM products p
+            LEFT JOIN stock s ON p.id = s.product_id
+            GROUP BY p.id, p.name, p.stok_minimum, p.sku
+            HAVING COALESCE(SUM(s.quantity), 0) <= p.stok_minimum
+            ORDER BY current_stock ASC, p.name ASC
+            LIMIT :lmt
+        ";
+        $sql = str_replace(':lmt', $limit, $sql); 
+        return $this->query($sql);
     }
 }

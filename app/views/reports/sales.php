@@ -205,38 +205,41 @@ new Chart(document.getElementById('chartRevenue').getContext('2d'), {
 });
 
 // Grafik Bar — Per Gudang
-new Chart(document.getElementById('chartWarehouse').getContext('2d'), {
-    type: 'bar',
-    data: {
-        labels: salesByWarehouse.map(d => d.warehouse_name ?? 'N/A'),
-        datasets: [{
-            label: 'Pendapatan',
-            data: salesByWarehouse.map(d => parseFloat(d.revenue)),
-            backgroundColor: colors.bars,
-            borderRadius: 4,
-            barThickness: 40
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        indexAxis: 'y',
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                callbacks: {
-                    label: ctx => 'Rp ' + ctx.parsed.x.toLocaleString('id-ID') + ' (' + salesByWarehouse[ctx.dataIndex].trx_count + ' trx)'
-                }
-            }
+const whCtx = document.getElementById('chartWarehouse')?.getContext('2d');
+if (whCtx && salesByWarehouse.length > 0) {
+    new Chart(whCtx, {
+        type: 'bar',
+        data: {
+            labels: salesByWarehouse.map(d => d.warehouse_name ?? 'N/A'),
+            datasets: [{
+                label: 'Pendapatan',
+                data: salesByWarehouse.map(d => parseFloat(d.revenue)),
+                backgroundColor: colors.bars,
+                borderRadius: 4,
+                barThickness: 40
+            }]
         },
-        scales: {
-            x: {
-                beginAtZero: true,
-                ticks: { callback: v => 'Rp ' + (v/1000).toLocaleString('id-ID') + 'K', font: { size: 11 } },
-                grid: { color: '#f1f5f9' }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => 'Rp ' + ctx.parsed.x.toLocaleString('id-ID') + ' (' + salesByWarehouse[ctx.dataIndex].trx_count + ' trx)'
+                    }
+                }
             },
-            y: { ticks: { font: { size: 12, weight: 600 } }, grid: { display: false } }
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { callback: v => 'Rp ' + (v/1000).toLocaleString('id-ID') + 'K', font: { size: 11 } },
+                    grid: { color: '#f1f5f9' }
+                },
+                y: { ticks: { font: { size: 12, weight: 600 } }, grid: { display: false } }
+            }
         }
-    }
-});
+    });
+}
 </script>

@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    <!-- Top Produk -->
+    <!-- Top 5 Produk Terlaris -->
     <div class="dashboard-card">
         <div class="card-header">
             <h3 class="card-title">Top 5 Produk Terlaris (Bulan Ini)</h3>
@@ -181,13 +181,7 @@
                     labels: donutLabels,
                     datasets: [{
                         data: donutData,
-                        backgroundColor: [
-                            '#3b82f6', // blue-500
-                            '#10b981', // emerald-500
-                            '#f59e0b', // amber-500
-                            '#6366f1', // indigo-500
-                            '#ec4899'  // pink-500
-                        ],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899'],
                         borderWidth: 2,
                         borderColor: '#ffffff'
                     }]
@@ -197,14 +191,7 @@
                     maintainAspectRatio: false,
                     cutout: '65%',
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                boxWidth: 12,
-                                padding: 15,
-                                font: { size: 11, family: 'Inter, sans-serif' }
-                            }
-                        }
+                        legend: { position: 'bottom', labels: { font: { size: 11, family: 'Inter, sans-serif' } } }
                     }
                 }
             });
