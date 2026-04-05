@@ -56,15 +56,6 @@ class Product extends Model
         );
     }
 
-    /**
-     * Hitung total produk aktif.
-     */
-    public function countActive(): int
-    {
-        $result = $this->queryOne("SELECT COUNT(*) as total FROM products WHERE is_active = TRUE");
-        return (int) ($result['total'] ?? 0);
-    }
-
     // ── Write ─────────────────────────────────────────────────────────────────
 
     /**
@@ -105,7 +96,7 @@ class Product extends Model
      */
     public function deactivate(int $id): int
     {
-        return $this->update($id, ['is_active' => false]);
+        return $this->update($id, ['is_active' => 'false']);
     }
 
     // ── Validasi ──────────────────────────────────────────────────────────────

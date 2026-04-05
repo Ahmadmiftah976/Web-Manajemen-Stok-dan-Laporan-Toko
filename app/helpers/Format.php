@@ -62,14 +62,6 @@ class Format
         return mb_substr($text, 0, $length) . '...';
     }
 
-    /**
-     * Format persentase.
-     * Contoh: Format::percent(0.75) → "75%"
-     */
-    public static function percent(float $value, int $decimals = 0): string
-    {
-        return number_format($value * 100, $decimals) . '%';
-    }
 
     /**
      * Generate kode transaksi unik.

@@ -21,6 +21,7 @@ unset($_SESSION['old_input']);
 <div class="card" style="max-width: 600px;">
     <div class="card-body p-4">
         <form method="POST" action="<?= APP_URL ?>/users/store" novalidate>
+            <?= Csrf::field() ?>
 
             <div class="row g-3">
                 <!-- Nama -->

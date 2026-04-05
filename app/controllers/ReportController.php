@@ -94,6 +94,7 @@ class ReportController extends Controller
 
     /**
      * GET /reports/export?type=sales|profit
+     * Export data sebagai CSV. Kolom uang berformat accounting (Rp130.000,00).
      */
     public function export(): void
     {
@@ -120,40 +121,86 @@ class ReportController extends Controller
 
         $output = fopen('php://output', 'w');
 
-        // BOM untuk Excel
+        // BOM agar Excel membaca karakter Indonesia dengan benar
         fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+        fwrite($output, "sep=;\n");
+
+        // Helper: format uang accounting → Rp130.000,00
+        $acct = fn($n) => 'Rp' . number_format((float)$n, 2, ',', '.');
 
         if ($type === 'profit') {
-            fputcsv($output, ['Produk', 'Kategori', 'Qty Terjual', 'Pendapatan', 'Modal', 'Laba', 'Margin (%)']);
+            fputcsv($output, ['No', 'Produk', 'Kategori', 'Qty Terjual', 'Pendapatan', 'Modal', 'Laba', 'Margin'], ';');
             $data = $this->reportModel->getProfitByProduct($filters);
-            foreach ($data as $row) {
+            foreach ($data as $i => $row) {
                 fputcsv($output, [
+                    $i + 1,
                     $row['product_name'],
                     $row['category'] ?? '-',
-                    $row['qty_sold'],
-                    $row['revenue'],
-                    $row['cogs'],
-                    $row['profit'],
+                    (int) $row['qty_sold'],
+                    $acct($row['revenue']),
+                    $acct($row['cogs']),
+                    $acct($row['profit']),
                     $row['margin_pct'] . '%'
-                ]);
+                ], ';');
             }
         } else {
-            fputcsv($output, ['Kode Trx', 'Tanggal', 'Kasir', 'Gudang', 'Metode', 'Diskon', 'Total']);
+            fputcsv($output, ['No', 'Kode Trx', 'Tanggal', 'Kasir', 'Gudang', 'Metode', 'Diskon', 'Total'], ';');
             $data = $this->reportModel->getSalesForExport($filters);
-            foreach ($data as $row) {
+            foreach ($data as $i => $row) {
                 fputcsv($output, [
+                    $i + 1,
                     $row['transaction_code'],
-                    $row['transaction_date'],
+                    date('d/m/Y H:i', strtotime($row['transaction_date'])),
                     $row['cashier_name'] ?? '-',
                     $row['warehouse_name'] ?? '-',
                     strtoupper($row['payment_method']),
-                    $row['discount_amount'],
-                    $row['total_amount']
-                ]);
+                    $acct($row['discount_amount']),
+                    $acct($row['total_amount'])
+                ], ';');
             }
         }
 
         fclose($output);
+        exit;
+    }
+
+    /**
+     * GET /reports/pdf?type=sales|profit
+     * Render halaman HTML print-ready dengan SELURUH data laporan.
+     * User bisa langsung Save as PDF dari dialog print browser.
+     */
+    public function exportPdf(): void
+    {
+        Auth::check();
+        Auth::checkRole('pemilik');
+
+        $type = $_GET['type'] ?? 'sales';
+
+        $filters = [
+            'date_from'      => $_GET['date_from'] ?? date('Y-m-01'),
+            'date_to'        => $_GET['date_to'] ?? date('Y-m-d'),
+            'warehouse_id'   => $_GET['warehouse_id'] ?? '',
+            'payment_method' => $_GET['payment_method'] ?? ''
+        ];
+
+        $periodLabel = Format::date($filters['date_from'], 'd F Y') . ' — ' . Format::date($filters['date_to'], 'd F Y');
+
+        if ($type === 'profit') {
+            $title              = 'Laporan Laba Rugi';
+            $summary            = $this->reportModel->getProfitSummary($filters);
+            $data               = $this->reportModel->getProfitByProduct($filters);
+            $topProducts        = $this->reportModel->getTopProducts($filters);
+            $revenueByCategory  = $this->reportModel->getRevenueByCategory($filters);
+        } else {
+            $title              = 'Laporan Penjualan';
+            $summary            = $this->reportModel->getSalesSummary($filters);
+            $data               = $this->reportModel->getSalesForExport($filters);
+            $revenueByDay       = $this->reportModel->getRevenueByDay($filters);
+            $salesByWarehouse   = $this->reportModel->getSalesByWarehouse($filters);
+        }
+
+        // Render view standalone (tanpa layout sidebar)
+        require APP_PATH . '/views/reports/pdf.php';
         exit;
     }
 }

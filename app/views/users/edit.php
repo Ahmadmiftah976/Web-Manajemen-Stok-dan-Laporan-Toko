@@ -21,6 +21,7 @@
     <div class="card-body p-4">
         <form method="POST" action="<?= APP_URL ?>/users/update" novalidate>
             <input type="hidden" name="id" value="<?= $user['id'] ?>">
+            <?= Csrf::field() ?>
 
             <div class="row g-3">
                 <!-- Nama -->

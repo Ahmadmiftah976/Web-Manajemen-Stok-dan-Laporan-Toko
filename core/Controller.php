@@ -157,14 +157,6 @@ class Controller
         return $_SERVER['REQUEST_METHOD'] === 'POST';
     }
 
-    /**
-     * Cek apakah request adalah AJAX (XMLHttpRequest).
-     */
-    protected function isAjax(): bool
-    {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-    }
 
     // ── Flash Message ─────────────────────────────────────────────────────────
 

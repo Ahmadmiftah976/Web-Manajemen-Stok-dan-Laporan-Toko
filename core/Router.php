@@ -64,6 +64,7 @@ class Router
         'GET /reports/sales' => ['ReportController', 'sales'],
         'GET /reports/profit' => ['ReportController', 'profit'],
         'GET /reports/export' => ['ReportController', 'export'],
+        'GET /reports/pdf' => ['ReportController', 'exportPdf'],
 
         // Users (pemilik only)
         'GET /users' => ['UserController', 'index'],
@@ -169,8 +170,7 @@ class Router
         http_response_code(404);
         if (APP_ENV === 'development') {
             echo "<h1>404 - Tidak Ditemukan</h1><p>$detail</p>";
-        }
-        else {
+        } else {
             echo "<h1>404 - Halaman Tidak Ditemukan</h1>";
         }
         exit;

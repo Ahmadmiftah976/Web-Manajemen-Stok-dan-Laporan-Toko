@@ -46,22 +46,6 @@ class Stock extends Model
     }
 
     /**
-     * Ambil ringkasan stok: total quantity per produk (semua gudang).
-     */
-    public function getStockSummary(): array
-    {
-        return $this->query(
-            "SELECT p.id, p.name, p.sku, p.category, p.stok_minimum,
-                    COALESCE(SUM(s.quantity), 0) AS total_stock
-             FROM   products p
-             LEFT   JOIN stock s ON s.product_id = p.id
-             WHERE  p.is_active = TRUE
-             GROUP  BY p.id, p.name, p.sku, p.category, p.stok_minimum
-             ORDER  BY p.name ASC"
-        );
-    }
-
-    /**
      * Ambil produk yang stoknya di bawah minimum di gudang manapun (untuk notifikasi).
      * Cek per gudang, bukan total semua gudang.
      */
@@ -151,7 +135,8 @@ class Stock extends Model
     // ── Write: Stok Masuk / Keluar ───────────────────────────────────────────
 
     /**
-     * Tambah stok (type = masuk) atau kurangi stok (type = keluar/koreksi).
+     * Tambah stok (type = masuk), kurangi stok (type = keluar),
+     * atau set stok ke jumlah sesungguhnya (type = koreksi).
      */
     public function adjustStock(array $data): void
     {
@@ -161,7 +146,7 @@ class Stock extends Model
             $productId   = (int) $data['product_id'];
             $warehouseId = (int) $data['warehouse_id'];
             $quantity    = (int) $data['quantity'];
-            $type        = $data['type'];      // 'masuk' atau 'keluar' atau 'koreksi'
+            $type        = $data['type'];      // 'masuk', 'keluar', atau 'koreksi'
             $notes       = $data['notes'] ?? null;
             $createdBy   = (int) $data['created_by'];
 
@@ -174,7 +159,20 @@ class Stock extends Model
             );
 
             // Update quantity
-            if ($type === 'masuk') {
+            if ($type === 'koreksi') {
+                // Koreksi: quantity = jumlah stok sesungguhnya di gudang
+                $currentQty = $this->getQuantity($productId, $warehouseId);
+                $delta      = $quantity - $currentQty; // positif = tambah, negatif = kurang
+
+                $this->execute(
+                    "UPDATE stock SET quantity = :qty, updated_at = NOW()
+                     WHERE product_id = :pid AND warehouse_id = :wid",
+                    [':qty' => $quantity, ':pid' => $productId, ':wid' => $warehouseId]
+                );
+
+                // Simpan delta ke movement agar riwayat tercatat selisihnya
+                $quantity = $delta;
+            } elseif ($type === 'masuk') {
                 $this->execute(
                     "UPDATE stock SET quantity = quantity + :qty, updated_at = NOW()
                      WHERE product_id = :pid AND warehouse_id = :wid",

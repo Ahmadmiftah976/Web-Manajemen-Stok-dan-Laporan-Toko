@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS stock_movements (
     -- Untuk transfer: from_warehouse dan to_warehouse diisi
     from_warehouse_id   INTEGER     REFERENCES warehouses(id) ON DELETE SET NULL,
     to_warehouse_id     INTEGER     REFERENCES warehouses(id) ON DELETE SET NULL,
-    quantity            INTEGER     NOT NULL CHECK (quantity > 0),
+    quantity            INTEGER     NOT NULL CHECK (quantity <> 0 OR type = 'koreksi'),
     type                VARCHAR(20) NOT NULL
                                     CHECK (type IN ('masuk', 'keluar', 'transfer', 'penjualan', 'koreksi')),
     reference_id        INTEGER,            -- ID transaksi jika type = 'penjualan'

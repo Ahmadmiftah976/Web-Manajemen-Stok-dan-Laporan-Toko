@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let discount = 0;
     let amountPaid = 0;
     let paymentMethod = 'tunai';
-    
+
     // DOM Elements
     const productsGrid = document.getElementById('productsGrid');
     const cartItemsList = document.getElementById('cartItems');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const warehouseSelect = document.querySelector('select[name="warehouse"]');
     const cashPaymentDetails = document.getElementById('cashPaymentDetails');
     const paymentRadios = document.querySelectorAll('.payment-method-radio');
-    
+
     // Helpers
     const formatRupiah = (number) => {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── 2. Logika Keranjang ──────────────────────────────────────────
     function addToCart(product) {
         const existingItem = cart.find(item => item.id === product.id);
-        
+
         if (existingItem) {
             if (existingItem.qty < product.stock) {
                 existingItem.qty++;
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             cart.push({ ...product, qty: 1 });
         }
-        
+
         renderCart();
     }
 
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (index > -1) {
             const item = cart[index];
             const newQty = item.qty + delta;
-            
+
             if (newQty <= 0) {
                 cart.splice(index, 1);
             } else if (newQty > item.stock) {
@@ -112,22 +112,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function clearCart() {
-        if(cart.length === 0) return;
-        if(confirm('Kosongkan keranjang?')) {
+        if (cart.length === 0) return;
+        if (confirm('Kosongkan keranjang?')) {
             cart = [];
             discountInput.value = '';
             paidInput.value = '';
             renderCart();
         }
     }
-    
+
     // Bind Clear Cart
     document.getElementById('btnClearCart')?.addEventListener('click', clearCart);
 
     // ── 3. Render Keranjang & Hitungan ───────────────────────────────
     function renderCart() {
         cartItemsList.innerHTML = '';
-        
+
         let subtotal = 0;
 
         if (cart.length === 0) {
@@ -135,11 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
             btnPay.disabled = true;
         } else {
             btnPay.disabled = false;
-            
+
             cart.forEach(item => {
                 const itemSubtotal = item.price * item.qty;
                 subtotal += itemSubtotal;
-                
+
                 const li = document.createElement('li');
                 li.className = 'pos-cart-item';
                 li.innerHTML = `
@@ -159,17 +159,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Kalkulasi Total
         subtotalEl.textContent = formatRupiah(subtotal);
-        
+
         // Ambil nilai diskon dari input
         discount = parseNumber(discountInput.value);
         if (discount > subtotal) {
             discount = subtotal; // Diskon tak boleh lebih dari belanja
             discountInput.value = formatRupiah(discount).replace('Rp', '').trim();
         }
-        
+
         const total = subtotal - discount;
         totalEl.textContent = formatRupiah(total);
-        
+
         if (paymentMethod === 'qris') {
             btnPay.disabled = cart.length === 0;
             amountPaid = total;
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Kalkulasi Kembalian
             amountPaid = parseNumber(paidInput.value);
             let change = amountPaid - total;
-            
+
             // Cek validitas bayar
             if (amountPaid === 0) {
                 changeEl.textContent = '-';
@@ -307,23 +307,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const { snap_token, order_id, transaction_id } = result.data;
 
-                // 2. Buka pop-up Midtrans Snap
+                // 2. Background polling: cek status pembayaran otomatis
+                //    Berjalan selama popup Snap terbuka, redirect jika sudah paid
+                let snapPollingInterval = setInterval(async () => {
+                    try {
+                        const res = await fetch(APP_URL + `/payment/status?order_id=${order_id}`);
+                        const data = await res.json();
+                        if (data.status === 'success' && data.data.payment_status === 'paid') {
+                            clearInterval(snapPollingInterval);
+                            snapPollingInterval = null;
+                            window.location.href = APP_URL + `/kasir/receipt?id=${transaction_id}`;
+                        }
+                    } catch (e) {
+                        console.error('Background polling error:', e);
+                    }
+                }, 3000);
+
+                // 3. Buka pop-up Midtrans Snap
                 window.snap.pay(snap_token, {
-                    onSuccess: function(result) {
-                        // Pembayaran berhasil, redirect ke struk
+                    onSuccess: function (result) {
+                        if (snapPollingInterval) clearInterval(snapPollingInterval);
                         window.location.href = APP_URL + `/kasir/receipt?id=${transaction_id}`;
                     },
-                    onPending: function(result) {
-                        // QR sudah di-scan tapi belum settle, tampilkan opsi
+                    onPending: function (result) {
+                        if (snapPollingInterval) clearInterval(snapPollingInterval);
                         showWaitingUI(snap_token, order_id, transaction_id);
                     },
-                    onError: function(result) {
+                    onError: function (result) {
+                        if (snapPollingInterval) clearInterval(snapPollingInterval);
                         alert('Pembayaran gagal. Silakan coba lagi.');
                         btnPay.disabled = false;
                         btnPay.innerHTML = 'BAYAR (QRIS)';
                     },
-                    onClose: function() {
-                        // User menutup popup → tampilkan opsi: buka ulang QR atau batalkan
+                    onClose: function () {
+                        if (snapPollingInterval) clearInterval(snapPollingInterval);
                         showWaitingUI(snap_token, order_id, transaction_id);
                     }
                 });
@@ -373,18 +390,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('btnReopenQR').addEventListener('click', () => {
             if (activePollingInterval) clearInterval(activePollingInterval);
             window.snap.pay(snapToken, {
-                onSuccess: function() {
+                onSuccess: function () {
                     window.location.href = APP_URL + `/kasir/receipt?id=${transactionId}`;
                 },
-                onPending: function() {
+                onPending: function () {
                     startBackgroundPolling(orderId, transactionId);
                     showWaitingUI(snapToken, orderId, transactionId);
                 },
-                onError: function() {
+                onError: function () {
                     alert('Pembayaran gagal.');
                     resetToNormal();
                 },
-                onClose: function() {
+                onClose: function () {
                     showWaitingUI(snapToken, orderId, transactionId);
                 }
             });

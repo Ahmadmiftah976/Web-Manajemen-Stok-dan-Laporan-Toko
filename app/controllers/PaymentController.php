@@ -26,7 +26,7 @@ class PaymentController extends Controller
     public function createQris(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            Response::json(['status' => 'error', 'message' => 'Method not allowed'], 405);
+            $this->jsonError('Method not allowed', 405);
         }
 
         // Pastikan user login
@@ -35,7 +35,7 @@ class PaymentController extends Controller
         $payload = json_decode(file_get_contents('php://input'), true);
 
         if (!$payload || empty($payload['cart'])) {
-            Response::json(['status' => 'error', 'message' => 'Data keranjang tidak valid'], 400);
+            $this->jsonError('Data keranjang tidak valid');
         }
 
         $warehouseId    = (int) ($payload['warehouse_id'] ?? 0);
@@ -44,7 +44,7 @@ class PaymentController extends Controller
         $cartItems      = $payload['cart'];
 
         if ($warehouseId <= 0 || $totalAmount <= 0) {
-            Response::json(['status' => 'error', 'message' => 'Gudang dan total harus valid'], 400);
+            $this->jsonError('Gudang dan total harus valid');
         }
 
         // Format item untuk database
@@ -75,7 +75,7 @@ class PaymentController extends Controller
         $transactionId = $this->transactionModel->createPendingTransaction($trxData, $items);
 
         if (!$transactionId) {
-            Response::json(['status' => 'error', 'message' => 'Gagal membuat transaksi'], 500);
+            $this->jsonError('Gagal membuat transaksi', 500);
         }
 
         // Ambil transaction code untuk order_id Midtrans
@@ -100,19 +100,13 @@ class PaymentController extends Controller
         if (isset($snapResult['error'])) {
             // Batalkan transaksi pending jika gagal dapat token
             $this->transactionModel->cancelTransaction($transactionId);
-            Response::json([
-                'status'  => 'error',
-                'message' => $snapResult['error']
-            ], 500);
+            $this->jsonError($snapResult['error'], 500);
         }
 
-        Response::json([
-            'status' => 'success',
-            'data'   => [
-                'snap_token'     => $snapResult['snap_token'],
-                'order_id'       => $orderId,
-                'transaction_id' => $transactionId
-            ]
+        $this->jsonSuccess('Snap token berhasil dibuat', [
+            'snap_token'     => $snapResult['snap_token'],
+            'order_id'       => $orderId,
+            'transaction_id' => $transactionId
         ]);
     }
 
@@ -190,24 +184,21 @@ class PaymentController extends Controller
         $orderId = $_GET['order_id'] ?? '';
 
         if (empty($orderId)) {
-            Response::json(['status' => 'error', 'message' => 'order_id diperlukan'], 400);
+            $this->jsonError('order_id diperlukan');
         }
 
         // Cek ke database dulu
         $transaction = $this->transactionModel->findByCode($orderId);
 
         if (!$transaction) {
-            Response::json(['status' => 'error', 'message' => 'Transaksi tidak ditemukan'], 404);
+            $this->jsonError('Transaksi tidak ditemukan', 404);
         }
 
         // Jika sudah paid di database, langsung return
         if ($transaction['payment_status'] === 'paid') {
-            Response::json([
-                'status' => 'success',
-                'data'   => [
-                    'payment_status' => 'paid',
-                    'transaction_id' => $transaction['id']
-                ]
+            $this->jsonSuccess('Status pembayaran', [
+                'payment_status' => 'paid',
+                'transaction_id' => $transaction['id']
             ]);
         }
 
@@ -219,21 +210,15 @@ class PaymentController extends Controller
             // Update di database
             $this->transactionModel->confirmPayment((int) $transaction['id']);
 
-            Response::json([
-                'status' => 'success',
-                'data'   => [
-                    'payment_status' => 'paid',
-                    'transaction_id' => $transaction['id']
-                ]
+            $this->jsonSuccess('Status pembayaran', [
+                'payment_status' => 'paid',
+                'transaction_id' => $transaction['id']
             ]);
         }
 
-        Response::json([
-            'status' => 'success',
-            'data'   => [
-                'payment_status' => $transaction['payment_status'],
-                'transaction_id' => $transaction['id']
-            ]
+        $this->jsonSuccess('Status pembayaran', [
+            'payment_status' => $transaction['payment_status'],
+            'transaction_id' => $transaction['id']
         ]);
     }
 
@@ -249,25 +234,22 @@ class PaymentController extends Controller
         $orderId = $payload['order_id'] ?? '';
 
         if (empty($orderId)) {
-            Response::json(['status' => 'error', 'message' => 'order_id diperlukan'], 400);
+            $this->jsonError('order_id diperlukan');
         }
 
         $transaction = $this->transactionModel->findByCode($orderId);
 
         if (!$transaction) {
-            Response::json(['status' => 'error', 'message' => 'Transaksi tidak ditemukan'], 404);
+            $this->jsonError('Transaksi tidak ditemukan', 404);
         }
 
         // Hanya bisa cancel jika masih pending
         if ($transaction['payment_status'] !== 'pending') {
-            Response::json(['status' => 'error', 'message' => 'Transaksi tidak bisa dibatalkan'], 400);
+            $this->jsonError('Transaksi tidak bisa dibatalkan');
         }
 
         $this->transactionModel->cancelTransaction((int) $transaction['id']);
 
-        Response::json([
-            'status'  => 'success',
-            'message' => 'Transaksi berhasil dibatalkan'
-        ]);
+        $this->jsonSuccess('Transaksi berhasil dibatalkan');
     }
 }

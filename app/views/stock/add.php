@@ -76,8 +76,11 @@
 
                 <!-- Jumlah -->
                 <div class="col-md-6">
-                    <label class="form-label" for="quantity">Jumlah <span class="text-danger">*</span></label>
+                    <label class="form-label" for="quantity" id="quantity_label">Jumlah <span class="text-danger">*</span></label>
                     <input type="number" id="quantity" name="quantity" class="form-control" placeholder="0" min="1" required>
+                    <div id="koreksi_help" class="form-text text-warning" style="display:none;">
+                        Masukkan jumlah stok yang ada di gudang.
+                    </div>
                 </div>
 
                 <!-- Catatan -->
@@ -111,5 +114,29 @@ document.addEventListener('DOMContentLoaded', function() {
         placeholder: '— Pilih Gudang —',
         width: '100%'
     });
+
+    // Dynamic label/placeholder saat tipe berubah
+    const radios       = document.querySelectorAll('input[name="type"]');
+    const qtyLabel     = document.getElementById('quantity_label');
+    const qtyInput     = document.getElementById('quantity');
+    const koreksiHelp  = document.getElementById('koreksi_help');
+
+    function updateQuantityUI() {
+        const selected = document.querySelector('input[name="type"]:checked').value;
+        if (selected === 'koreksi') {
+            qtyLabel.innerHTML = 'Jumlah Stok Sesungguhnya <span class="text-danger">*</span>';
+            qtyInput.placeholder = 'Stok aktual di gudang';
+            qtyInput.min = '0';
+            koreksiHelp.style.display = '';
+        } else {
+            qtyLabel.innerHTML = 'Jumlah <span class="text-danger">*</span>';
+            qtyInput.placeholder = '0';
+            qtyInput.min = '1';
+            koreksiHelp.style.display = 'none';
+        }
+    }
+
+    radios.forEach(r => r.addEventListener('change', updateQuantityUI));
+    updateQuantityUI();
 });
 </script>

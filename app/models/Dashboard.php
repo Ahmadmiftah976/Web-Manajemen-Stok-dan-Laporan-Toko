@@ -98,23 +98,6 @@ class Dashboard extends Model
     }
 
     /**
-     * Data grafik Garis: Pendapatan Harian Bulan Ini (Pengganti Trend 7 Hari di Dashboard)
-     */
-    public function getRevenueByDayThisMonth(): array
-    {
-        $sql = "
-            SELECT DATE(t.transaction_date) AS t_date, SUM(t.total_amount) AS total
-            FROM transactions t
-            WHERE EXTRACT(MONTH FROM t.transaction_date) = EXTRACT(MONTH FROM CURRENT_DATE)
-              AND EXTRACT(YEAR FROM t.transaction_date) = EXTRACT(YEAR FROM CURRENT_DATE)
-              AND t.payment_status = 'paid'
-            GROUP BY DATE(t.transaction_date)
-            ORDER BY t_date ASC
-        ";
-        return $this->query($sql);
-    }
-
-    /**
      * Data grafik Top 5 Produk Terlaris bulan ini (Doughnut Chart)
      */
     public function getTopProductsThisMonth(): array
@@ -223,7 +206,7 @@ class Dashboard extends Model
             FROM products p
             LEFT JOIN stock s ON p.id = s.product_id
             GROUP BY p.id, p.name, p.stok_minimum, p.sku
-            HAVING COALESCE(SUM(s.quantity), 0) <= p.stok_minimum
+            HAVING COALESCE(SUM(s.quantity), 0) > 0 AND COALESCE(SUM(s.quantity), 0) < p.stok_minimum
             ORDER BY current_stock ASC, p.name ASC
             LIMIT :lmt
         ";

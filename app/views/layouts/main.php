@@ -197,10 +197,20 @@
                 'warning' => 'alert-warning',
                 default   => 'alert-info',
             }; ?>
-            <div class="flash-alert alert <?= $alertClass ?> fade show d-flex align-items-center justify-content-between pe-3" role="alert">
+            <div class="flash-alert alert <?= $alertClass ?> fade show d-flex align-items-center justify-content-between pe-3" role="alert" id="flashAlert">
                 <div class="mb-0 flex-grow-1"><?= htmlspecialchars($flash['message']) ?></div>
                 <button type="button" class="btn-close position-static m-0" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+            <script>
+                setTimeout(function() {
+                    var el = document.getElementById('flashAlert');
+                    if (el) {
+                        el.style.transition = 'opacity 0.5s ease';
+                        el.style.opacity = '0';
+                        setTimeout(function() { el.remove(); }, 500);
+                    }
+                }, 4000);
+            </script>
         <?php endif; ?>
 
         <?= $content ?>

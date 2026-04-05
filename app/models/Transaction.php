@@ -23,11 +23,10 @@ class Transaction extends Model
             $pdo->beginTransaction();
 
             // 1. Generate Transaction Code (Format: TRX-YYYYMMDD-XXXX)
-            $datePrefix = 'TRX-' . date('Ymd') . '-';
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE DATE(transaction_date) = CURRENT_DATE");
             $stmt->execute();
             $countToday = (int) $stmt->fetchColumn();
-            $transactionCode = $datePrefix . str_pad((string)($countToday + 1), 4, '0', STR_PAD_LEFT);
+            $transactionCode = Format::transactionCode($countToday + 1);
 
             // 2. Insert ke tabel transactions
             $stmtTrx = $pdo->prepare("
@@ -114,7 +113,7 @@ class Transaction extends Model
     /**
      * Hitung ringkasan hari ini (Pendapatan & Jumlah Transaksi) untuk Kasir
      */
-    public function getTodaySummary(int $warehouseId = 0): array
+    public function getTodaySummary(int $warehouseId = 0, ?int $cashierId = null): array
     {
         $db = Database::getInstance();
         $pdo = $db->getConnection();
@@ -127,6 +126,10 @@ class Transaction extends Model
         if ($warehouseId > 0) {
             $sql .= " AND warehouse_id = :warehouse";
             $params[':warehouse'] = $warehouseId;
+        }
+        if ($cashierId !== null) {
+            $sql .= " AND cashier_id = :cashier_id";
+            $params[':cashier_id'] = $cashierId;
         }
         
         $stmt = $pdo->prepare($sql);
@@ -148,11 +151,10 @@ class Transaction extends Model
             $pdo->beginTransaction();
 
             // Generate Transaction Code
-            $datePrefix = 'TRX-' . date('Ymd') . '-';
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE DATE(transaction_date) = CURRENT_DATE");
             $stmt->execute();
             $countToday = (int) $stmt->fetchColumn();
-            $transactionCode = $datePrefix . str_pad((string)($countToday + 1), 4, '0', STR_PAD_LEFT);
+            $transactionCode = Format::transactionCode($countToday + 1);
 
             // Insert transaksi dengan status pending
             $stmtTrx = $pdo->prepare("

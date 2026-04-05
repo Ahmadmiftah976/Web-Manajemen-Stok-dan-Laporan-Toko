@@ -99,6 +99,15 @@
                                 <span class="text-success">+<?= (int) $m['quantity'] ?></span>
                             <?php elseif (in_array($m['type'], ['keluar', 'penjualan'])): ?>
                                 <span class="text-danger">-<?= (int) $m['quantity'] ?></span>
+                            <?php elseif ($m['type'] === 'koreksi'): ?>
+                                <?php $qty = (int) $m['quantity']; ?>
+                                <?php if ($qty > 0): ?>
+                                    <span class="text-success">+<?= $qty ?></span>
+                                <?php elseif ($qty < 0): ?>
+                                    <span class="text-danger"><?= $qty ?></span>
+                                <?php else: ?>
+                                    <span>0</span>
+                                <?php endif; ?>
                             <?php else: ?>
                                 <?= (int) $m['quantity'] ?>
                             <?php endif; ?>

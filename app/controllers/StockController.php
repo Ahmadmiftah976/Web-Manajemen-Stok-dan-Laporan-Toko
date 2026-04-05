@@ -99,8 +99,8 @@ class StockController extends Controller
         // Validasi
         $errors = $this->validateStockInput($productId, $warehouseId, $quantity, $type);
 
-        // Cek stok cukup jika keluar/koreksi
-        if ($type !== 'masuk' && empty($errors)) {
+        // Cek stok cukup hanya jika keluar (koreksi boleh berapapun ≥ 0)
+        if ($type === 'keluar' && empty($errors)) {
             $currentQty = $this->stockModel->getQuantity($productId, $warehouseId);
             if ($quantity > $currentQty) {
                 $errors[] = "Stok tidak cukup. Stok saat ini: {$currentQty}.";
@@ -109,6 +109,17 @@ class StockController extends Controller
 
         if (!empty($errors)) {
             $this->flash('error', implode(' ', $errors));
+            $this->redirect('/stock/add');
+        }
+
+        // Simpan stok sebelumnya untuk pesan koreksi
+        $oldQty = ($type === 'koreksi')
+            ? $this->stockModel->getQuantity($productId, $warehouseId)
+            : 0;
+
+        // Koreksi: cek apakah jumlah sudah sama dengan stok di sistem
+        if ($type === 'koreksi' && $quantity === $oldQty) {
+            $this->flash('info', "Jumlah yang dimasukkan sudah sesuai dengan stok di sistem ({$oldQty} unit).");
             $this->redirect('/stock/add');
         }
 
@@ -122,8 +133,16 @@ class StockController extends Controller
             'created_by'   => Auth::user('id'),
         ]);
 
-        $label = $type === 'masuk' ? 'ditambahkan' : 'dikurangi';
-        $this->flash('success', "Stok berhasil {$label} ({$quantity} unit).");
+        if ($type === 'koreksi') {
+            $delta     = $quantity - $oldQty;
+            $direction = $delta > 0 ? '+' : '';
+            $flashType = $delta > 0 ? 'success' : 'error';
+            $this->flash($flashType, "Stok dikoreksi menjadi {$quantity} unit ({$direction}{$delta}).");
+        } else {
+            $label     = $type === 'masuk' ? 'ditambahkan' : 'dikurangi';
+            $flashType = $type === 'masuk' ? 'success' : 'error';
+            $this->flash($flashType, "Stok berhasil {$label} ({$quantity} unit).");
+        }
         $this->redirect('/stock');
     }
 
@@ -257,7 +276,11 @@ class StockController extends Controller
             $errors[] = 'Pilih gudang.';
         }
 
-        if ($quantity <= 0) {
+        if ($type === 'koreksi') {
+            if ($quantity < 0) {
+                $errors[] = 'Jumlah stok sesungguhnya tidak boleh negatif.';
+            }
+        } elseif ($quantity <= 0) {
             $errors[] = 'Jumlah harus lebih dari 0.';
         }
 
