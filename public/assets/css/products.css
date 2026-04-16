@@ -53,3 +53,347 @@
     color: var(--text-muted);
     margin-top: 4px;
 }
+
+/* ============================================================
+   5. CATEGORY PICKER COMPONENT
+   ============================================================ */
+
+/* -- Container Card ---------------------------------------- */
+.category-picker {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+}
+
+.category-picker:focus-within {
+    border-color: var(--accent-500);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+}
+
+/* -- Search Input ------------------------------------------ */
+.category-picker-search {
+    position: relative;
+    border-bottom: 1px solid var(--border);
+}
+
+.category-picker-search input {
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 10px 12px 10px 36px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    background: transparent;
+}
+
+.category-picker-search input::placeholder {
+    color: var(--text-muted);
+}
+
+.category-picker-search .search-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    display: flex;
+}
+
+.category-picker-search .search-icon svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* -- Scrollable List --------------------------------------- */
+.category-picker-list {
+    max-height: 184px;
+    overflow-y: auto;
+    padding: 4px 0;
+}
+
+/* Custom scrollbar */
+.category-picker-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.category-picker-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.category-picker-list::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+
+.category-picker-list::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* -- Individual Item --------------------------------------- */
+.category-picker-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: background-color 0.1s ease;
+    user-select: none;
+}
+
+.category-picker-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.category-picker-item.selected {
+    background-color: var(--accent-50);
+    color: var(--accent-600);
+    font-weight: 600;
+}
+
+/* Checkbox indicator */
+.category-picker-item .check-indicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.12s ease;
+}
+
+.category-picker-item.selected .check-indicator {
+    background-color: var(--accent-600);
+    border-color: var(--accent-600);
+}
+
+.category-picker-item .check-indicator svg {
+    width: 11px;
+    height: 11px;
+    stroke: white;
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.12s ease;
+}
+
+.category-picker-item.selected .check-indicator svg {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* -- Empty / No Results ------------------------------------ */
+.category-picker-empty {
+    padding: 20px 14px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.category-picker-empty svg {
+    width: 28px;
+    height: 28px;
+    stroke: var(--text-light);
+    fill: none;
+    stroke-width: 1.5;
+    margin-bottom: 6px;
+}
+
+/* -- Sticky Footer Button ---------------------------------- */
+.category-picker-footer {
+    position: sticky;
+    bottom: 0;
+    border-top: 1px solid var(--border);
+    background: var(--bg-page);
+    z-index: 2;
+}
+
+.category-picker-footer button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 9px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-600);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.12s ease;
+}
+
+.category-picker-footer button:hover {
+    background-color: var(--accent-50);
+}
+
+.category-picker-footer button svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* -- Add Category Card ------------------------------------- */
+.category-add-card {
+    border: 1px solid var(--accent-500);
+    border-radius: var(--radius-md);
+    background: var(--accent-50);
+    padding: 14px;
+    margin-top: 10px;
+    animation: catCardSlideIn 0.2s ease;
+}
+
+@keyframes catCardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.category-add-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.category-add-card-title svg {
+    width: 15px;
+    height: 15px;
+    stroke: var(--accent-600);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.category-add-card input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    background: var(--bg-card);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.category-add-card input:focus {
+    outline: none;
+    border-color: var(--accent-500);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+
+.category-add-card input::placeholder {
+    text-transform: none;
+    color: var(--text-muted);
+}
+
+.category-add-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* -- Inline Notification ----------------------------------- */
+.category-notif {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 8px;
+    animation: catNotifIn 0.2s ease;
+}
+
+@keyframes catNotifIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.category-notif svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+
+.category-notif-success {
+    background: var(--success-100);
+    color: var(--success-600);
+    border: 1px solid #bbf7d0;
+}
+
+.category-notif-warning {
+    background: var(--warning-100);
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.category-notif-info {
+    background: var(--accent-100);
+    color: var(--accent-600);
+    border: 1px solid #93c5fd;
+}
+
+/* -- Selected Category Badge (below picker) ---------------- */
+.category-selected-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 5px 10px;
+    background: var(--accent-50);
+    border: 1px solid var(--accent-100);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-600);
+}
+
+.category-selected-badge svg {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
