@@ -13,7 +13,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
     <!-- CSS Aplikasi -->
-    <?php $cssVersion = '20260315b'; ?>
+    <?php $cssVersion = '20260418a'; ?>
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/app.css?v=<?= $cssVersion ?>">
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/layout.css?v=<?= $cssVersion ?>">
 

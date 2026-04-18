@@ -69,7 +69,7 @@
 
 .category-picker:focus-within {
     border-color: var(--accent-500);
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.10);
 }
 
 /* -- Search Input ------------------------------------------ */
@@ -270,6 +270,7 @@
         opacity: 0;
         transform: translateY(-6px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -312,7 +313,7 @@
 .category-add-card input:focus {
     outline: none;
     border-color: var(--accent-500);
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }
 
 .category-add-card input::placeholder {
@@ -340,8 +341,15 @@
 }
 
 @keyframes catNotifIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .category-notif svg {
@@ -396,4 +404,42 @@
     stroke-width: 2.5;
     stroke-linecap: round;
     stroke-linejoin: round;
+}
+
+/* ============================================================
+   6. INITIAL STOCK SECTION (on create form)
+   ============================================================ */
+.initial-stock-section {
+    background: var(--bg-page);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.initial-stock-section:focus-within {
+    border-color: var(--accent-400);
+    background: var(--accent-50);
+    border-style: solid;
+}
+
+.initial-stock-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+}
+
+.initial-stock-header svg {
+    color: var(--accent-600);
+    flex-shrink: 0;
+}
+
+.initial-stock-section .form-label {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-primary);
 }

@@ -6,14 +6,20 @@
  */
 
 require_once APP_PATH . '/models/Product.php';
+require_once APP_PATH . '/models/Stock.php';
+require_once APP_PATH . '/models/Warehouse.php';
 
 class ProductController extends Controller
 {
-    private Product $productModel;
+    private Product   $productModel;
+    private Stock     $stockModel;
+    private Warehouse $warehouseModel;
 
     public function __construct()
     {
-        $this->productModel = new Product();
+        $this->productModel   = new Product();
+        $this->stockModel     = new Stock();
+        $this->warehouseModel = new Warehouse();
     }
 
     // ── Private Helpers ──────────────────────────────────────────────────────
@@ -71,11 +77,13 @@ class ProductController extends Controller
         Auth::checkRole('pemilik');
 
         $categories = $this->productModel->getCategories();
+        $warehouses = $this->warehouseModel->getAllActive();
 
         $this->view('products/create', [
             'title'      => 'Tambah Produk — ' . APP_NAME,
             'pageTitle'  => 'Tambah Produk',
             'categories' => $categories,
+            'warehouses' => $warehouses,
             'extraCss'   => ['products.css'],
         ]);
     }
@@ -93,8 +101,21 @@ class ProductController extends Controller
         // Ambil input
         $data = $this->getProductInput();
 
+        // Ambil input stok awal
+        $initialStock       = (int) ($_POST['initial_stock'] ?? 0);
+        $initialWarehouseId = (int) ($_POST['initial_warehouse_id'] ?? 0);
+
         // Validasi
         $errors = $this->validateProduct($data);
+
+        // Validasi stok awal
+        if ($initialStock < 0) {
+            $errors[] = 'Stok awal tidak boleh negatif.';
+        }
+
+        if ($initialStock > 0 && $initialWarehouseId <= 0) {
+            $errors[] = 'Pilih gudang untuk stok awal.';
+        }
 
         if (!empty($errors)) {
             $this->flash('error', implode(' ', $errors));
@@ -107,10 +128,22 @@ class ProductController extends Controller
             $this->redirect('/products/create');
         }
 
-        // Simpan
-        $this->productModel->createProduct($data);
+        // Simpan produk
+        $productId = $this->productModel->createProduct($data);
 
-        $this->flash('success', 'Produk berhasil ditambahkan.');
+        // Simpan stok awal jika diisi > 0
+        if ($initialStock > 0 && $initialWarehouseId > 0) {
+            $this->stockModel->adjustStock([
+                'product_id'   => $productId,
+                'warehouse_id' => $initialWarehouseId,
+                'quantity'     => $initialStock,
+                'type'         => 'masuk',
+                'notes'        => 'Stok awal saat pembuatan produk',
+                'created_by'   => Auth::user('id'),
+            ]);
+        }
+
+        $this->flash('success', 'Produk berhasil ditambahkan.' . ($initialStock > 0 ? " Stok awal: {$initialStock} unit." : ''));
         $this->redirect('/products');
     }
 

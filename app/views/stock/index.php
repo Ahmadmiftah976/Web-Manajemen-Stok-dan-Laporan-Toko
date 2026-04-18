@@ -2,7 +2,7 @@
 /**
  * app/views/stock/index.php
  * Daftar stok per gudang dengan filter dan indikator stok rendah.
- * Variabel: $warehouses, $warehouseId, $stocks, $lowStock, $search
+ * Variabel: $warehouses, $warehouseId, $stocks, $lowStock, $search, $categories, $category
  */
 ?>
 
@@ -48,6 +48,14 @@
                 <option value="menipis" <?= (isset($status) && $status === 'menipis') ? 'selected' : '' ?>>Menipis</option>
                 <option value="habis" <?= (isset($status) && $status === 'habis') ? 'selected' : '' ?>>Habis</option>
             </select>
+            <select name="category" class="form-select" style="max-width:180px;" onchange="this.form.submit()">
+                <option value="">Semua Kategori</option>
+                <?php foreach ($categories as $cat): ?>
+                    <option value="<?= htmlspecialchars($cat['category']) ?>" <?= (isset($category) && $category === $cat['category']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($cat['category']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
             <div class="input-group" style="max-width:250px;">
                 <span class="input-group-text bg-white border-end-0">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -55,7 +63,7 @@
                 <input type="text" name="search" class="form-control border-start-0" placeholder="Cari produk..." value="<?= htmlspecialchars($search) ?>">
             </div>
             <button type="submit" class="btn btn-outline-secondary btn-sm">Filter</button>
-            <?php if ($search): ?>
+            <?php if ($search || $status || $category): ?>
                 <a href="<?= APP_URL ?>/stock?warehouse=<?= $warehouseId ?>" class="btn btn-outline-secondary btn-sm">Reset</a>
             <?php endif; ?>
         </form>

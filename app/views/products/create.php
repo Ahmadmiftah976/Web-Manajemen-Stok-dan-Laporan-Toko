@@ -2,7 +2,7 @@
 /**
  * Lokasi: app/views/products/create.php
  * Deskripsi: Form tambah produk baru.
- * Variabel: $categories
+ * Variabel: $categories, $warehouses
  */
 ?>
 
@@ -160,6 +160,46 @@
                     <input type="number" id="stok_minimum" name="stok_minimum" class="form-control" placeholder="5"
                         min="0" value="<?= htmlspecialchars($_POST['stok_minimum'] ?? '5') ?>">
                     <div class="form-text">Notifikasi muncul saat stok di bawah angka ini</div>
+                </div>
+
+                <!-- ═══ Stok Awal Section ═══ -->
+                <div class="col-12 mt-2">
+                    <div class="initial-stock-section">
+                        <div class="initial-stock-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                <line x1="12" y1="22.08" x2="12" y2="12"/>
+                            </svg>
+                            <span>Stok Awal</span>
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Gudang -->
+                            <div class="col-md-6">
+                                <label class="form-label" for="initial_warehouse_id">Gudang</label>
+                                <select id="initial_warehouse_id" name="initial_warehouse_id" class="form-select">
+                                    <?php if (empty($warehouses)): ?>
+                                        <option value="">— Belum ada gudang —</option>
+                                    <?php else: ?>
+                                        <?php foreach ($warehouses as $w): ?>
+                                            <option value="<?= $w['id'] ?>" <?= (($_POST['initial_warehouse_id'] ?? '') == $w['id']) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($w['name']) ?> — <?= htmlspecialchars($w['location']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+
+                            <!-- Jumlah Stok Awal -->
+                            <div class="col-md-6">
+                                <label class="form-label" for="initial_stock">Jumlah Stok Awal</label>
+                                <input type="number" id="initial_stock" name="initial_stock" class="form-control"
+                                    placeholder="0" min="0" value="<?= htmlspecialchars($_POST['initial_stock'] ?? '0') ?>">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Deskripsi -->

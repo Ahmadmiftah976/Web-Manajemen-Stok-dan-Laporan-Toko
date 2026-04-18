@@ -35,11 +35,13 @@ class StockController extends Controller
         $warehouseId   = (int) ($this->query('warehouse') ?? ($warehouses[0]['id'] ?? 0));
         $search        = $this->query('search', '');
         $status        = $this->query('status', '');
+        $category      = $this->query('category', '');
 
         $stocks   = $warehouseId > 0
-            ? $this->stockModel->getStockByWarehouse($warehouseId, $search, $status)
+            ? $this->stockModel->getStockByWarehouse($warehouseId, $search, $status, $category)
             : [];
-        $lowStock = $this->stockModel->getLowStock();
+        $lowStock   = $this->stockModel->getLowStock();
+        $categories = $this->productModel->getCategories();
 
         $this->view('stock/index', [
             'title'       => 'Manajemen Stok — ' . APP_NAME,
@@ -48,8 +50,10 @@ class StockController extends Controller
             'warehouseId' => $warehouseId,
             'stocks'      => $stocks,
             'lowStock'    => $lowStock,
+            'categories'  => $categories,
             'search'      => $search,
             'status'      => $status,
+            'category'    => $category,
             'extraCss'    => ['stock.css'],
         ]);
     }
