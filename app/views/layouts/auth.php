@@ -11,42 +11,59 @@
 </head>
 <body class="auth-body">
 
-    <div class="auth-card">
+    <div class="auth-wrapper">
 
-        <div class="auth-brand">
-            <div class="auth-brand-icon">
-                <img src="<?= APP_URL ?>/assets/img/logo.jpg" alt="Logo">
+        <!-- KIRI: Form Panel -->
+        <div class="auth-form-panel">
+
+            <div class="auth-form-inner">
+
+
+
+                <h2 class="auth-form-title">Masuk ke Akun</h2>
+                <p class="auth-form-subtitle">Masukkan kredensial Anda untuk mengakses dashboard.</p>
+
+                <?php if (isset($_SESSION['flash'])): ?>
+                    <?php $flash = $_SESSION['flash']; unset($_SESSION['flash']); ?>
+                    <div class="auth-alert <?= htmlspecialchars($flash['type']) ?>">
+                        <span class="auth-alert-icon">
+                            <?php if ($flash['type'] === 'error'): ?>&#10060;
+                            <?php elseif ($flash['type'] === 'success'): ?>&#10004;
+                            <?php else: ?>&#9888;
+                            <?php endif; ?>
+                        </span>
+                        <?= htmlspecialchars($flash['message']) ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($expired ?? false): ?>
+                    <div class="auth-alert warning">
+                        <span class="auth-alert-icon">&#9201;</span>
+                        Sesi Anda telah berakhir. Silakan login kembali.
+                    </div>
+                <?php endif; ?>
+
+                <?= $content ?>
+
+                <div class="auth-footer">
+                    &copy; <?= date('Y') ?> <?= APP_NAME ?> &mdash; All rights reserved
+                </div>
+
             </div>
-            <div class="auth-brand-name">Majma<span>Insight</span></div>
-            <div class="auth-brand-tagline">Sistem Manajemen Stok &amp; Laporan Penjualan</div>
         </div>
 
-        <div class="auth-divider"></div>
-
-        <?php if (isset($_SESSION['flash'])): ?>
-            <?php $flash = $_SESSION['flash']; unset($_SESSION['flash']); ?>
-            <div class="auth-alert <?= htmlspecialchars($flash['type']) ?>">
-                <span class="auth-alert-icon">
-                    <?php if ($flash['type'] === 'error'): ?>&#10060;
-                    <?php elseif ($flash['type'] === 'success'): ?>&#10004;
-                    <?php else: ?>&#9888;
-                    <?php endif; ?>
-                </span>
-                <?= htmlspecialchars($flash['message']) ?>
+        <!-- KANAN: Decorative Panel -->
+        <div class="auth-deco-panel">
+            <div class="auth-deco-inner">
+                <div class="auth-deco-logo-wrap">
+                    <img src="<?= APP_URL ?>/assets/img/logo.jpg" alt="Logo Majma Collection">
+                </div>
+                <h3 class="auth-deco-title">Selamat Datang!</h3>
+                <div class="auth-deco-brand">
+                    <div class="auth-deco-brand-name">Majma<span>Insight</span></div>
+                    <div class="auth-deco-brand-tagline">Sistem Manajemen Stok &amp; Laporan Penjualan</div>
+                </div>
             </div>
-        <?php endif; ?>
-
-        <?php if ($expired ?? false): ?>
-            <div class="auth-alert warning">
-                <span class="auth-alert-icon">&#9201;</span>
-                Sesi Anda telah berakhir. Silakan login kembali.
-            </div>
-        <?php endif; ?>
-
-        <?= $content ?>
-
-        <div class="auth-footer">
-            &copy; <?= date('Y') ?> <?= APP_NAME ?> &mdash; All rights reserved
         </div>
 
     </div>

@@ -1,6 +1,6 @@
 /*
  * Lokasi: public/assets/css/auth.css
- * Deskripsi: Styling khusus halaman Login.
+ * Deskripsi: Styling halaman Login — layout card dua kolom dengan background elegant.
  * Diload di: layouts/auth.php
  */
 
@@ -12,90 +12,95 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-page);
+    margin: 0;
+    padding: 32px;
+    background-color: #eef2f7;
+    /* Subtle dot pattern */
+    background-image: radial-gradient(circle, #d5dce6 1px, transparent 1px);
+    background-size: 24px 24px;
     position: relative;
-}
-
-/* Subtle gradient background */
-.auth-body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-        linear-gradient(135deg, var(--primary-800) 0%, var(--primary-800) 40%, transparent 40%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* ============================================================
-   2. CARD
-   ============================================================ */
-.auth-card {
-    position: relative;
-    z-index: 1;
-    background: white;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border);
-    width: 100%;
-    max-width: 420px;
-    padding: 40px 36px;
-}
-
-/* ============================================================
-   3. BRAND / LOGO
-   ============================================================ */
-.auth-brand {
-    text-align: center;
-    margin-bottom: 28px;
-}
-
-.auth-brand-icon {
-    width: 64px; height: 64px;
-    border-radius: var(--radius-md);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 12px;
     overflow: hidden;
 }
 
-.auth-brand-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: var(--radius-md);
+/* Soft decorative circle — top-left */
+.auth-body::before {
+    content: '';
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: rgba(30, 41, 59, 0.04);
+    top: -200px;
+    left: -200px;
+    z-index: 0;
+    pointer-events: none;
 }
 
-.auth-brand-name {
-    font-family: 'Inter', sans-serif;
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--text-dark);
-    letter-spacing: -0.5px;
-    line-height: 1;
-    margin-bottom: 6px;
-}
-
-.auth-brand-name span {
-    color: var(--accent-600);
-}
-
-.auth-brand-tagline {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-/* Garis pemisah */
-.auth-divider {
-    height: 1px;
-    background: var(--border);
-    margin-bottom: 24px;
+/* Soft decorative circle — bottom-right */
+.auth-body::after {
+    content: '';
+    position: fixed;
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    background: rgba(30, 41, 59, 0.03);
+    bottom: -150px;
+    right: -100px;
+    z-index: 0;
+    pointer-events: none;
 }
 
 /* ============================================================
-   4. FORM
+   2. WRAPPER — Card dua kolom
+   ============================================================ */
+.auth-wrapper {
+    display: flex;
+    width: 100%;
+    max-width: 900px;
+    min-height: 540px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.10), 0 4px 12px rgba(15, 23, 42, 0.06);
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================================
+   3. PANEL KIRI — Form
+   ============================================================ */
+.auth-form-panel {
+    flex: 1;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 44px;
+}
+
+.auth-form-inner {
+    width: 100%;
+    max-width: 380px;
+}
+
+/* Judul & subjudul form */
+.auth-form-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    letter-spacing: -0.4px;
+}
+
+.auth-form-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    font-weight: 400;
+}
+
+/* ============================================================
+   4. FORM FIELDS
    ============================================================ */
 
 /* Wrapper input dengan icon di kiri */
@@ -116,7 +121,8 @@
 }
 
 .auth-input-icon svg {
-    width: 15px; height: 15px;
+    width: 15px;
+    height: 15px;
     stroke: currentColor;
     fill: none;
     stroke-width: 2;
@@ -151,7 +157,8 @@
 }
 
 .auth-toggle-pw svg {
-    width: 15px; height: 15px;
+    width: 15px;
+    height: 15px;
     stroke: currentColor;
     fill: none;
     stroke-width: 2;
@@ -159,16 +166,18 @@
     stroke-linejoin: round;
 }
 
-.auth-toggle-pw:hover { color: var(--accent-600); }
+.auth-toggle-pw:hover {
+    color: var(--accent-600);
+}
 
 /* ============================================================
    5. SUBMIT BUTTON
    ============================================================ */
 .auth-btn-submit {
     width: 100%;
-    padding: 10px;
+    padding: 11px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -178,16 +187,23 @@
     border-color: var(--primary-800);
     border-radius: var(--radius-sm);
     color: #ffffff !important;
-    transition: background-color 0.15s;
+    letter-spacing: 0.3px;
+    transition: background-color 0.2s, transform 0.1s;
 }
 
 .auth-btn-submit:hover {
     background-color: var(--primary-900);
     border-color: var(--primary-900);
+    transform: translateY(-1px);
+}
+
+.auth-btn-submit:active {
+    transform: translateY(0);
 }
 
 .auth-btn-submit svg {
-    width: 15px; height: 15px;
+    width: 15px;
+    height: 15px;
     stroke: currentColor;
     fill: none;
     stroke-width: 2.5;
@@ -238,7 +254,7 @@
    ============================================================ */
 .auth-footer {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 32px;
     padding-top: 14px;
     border-top: 1px solid var(--border);
     font-size: 11px;
@@ -247,15 +263,193 @@
 }
 
 /* ============================================================
-   8. RESPONSIVE
+   8. PANEL KANAN — Dekorasi
    ============================================================ */
-@media (max-width: 480px) {
-    .auth-card {
-        margin: 16px;
-        padding: 28px 24px;
+.auth-deco-panel {
+    width: 42%;
+    flex-shrink: 0;
+    background: var(--primary-800);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 16px 16px 100px;
+}
+
+/* Lingkaran dekoratif latar */
+.auth-deco-panel::before {
+    content: '';
+    position: absolute;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.035);
+    top: -100px;
+    right: -100px;
+    pointer-events: none;
+}
+
+.auth-deco-panel::after {
+    content: '';
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.035);
+    bottom: -70px;
+    left: -70px;
+    pointer-events: none;
+}
+
+.auth-deco-inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 40px 36px;
+}
+
+/* Logo di panel kanan */
+.auth-deco-logo-wrap {
+    width: 120px;
+    height: 120px;
+    border-radius: 22px;
+    overflow: hidden;
+    margin: 0 auto 28px;
+    border: 3px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+}
+
+.auth-deco-logo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.auth-deco-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 24px;
+    letter-spacing: -0.3px;
+}
+
+/* Brand info di panel kanan (di bawah logo) */
+.auth-deco-brand {
+    margin-top: 4px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-deco-brand-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.auth-deco-brand-name span {
+    color: var(--accent-400);
+}
+
+.auth-deco-brand-tagline {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+}
+
+/* ============================================================
+   9. SPINNER BUTTON
+   ============================================================ */
+.spinner-btn {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: none;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   10. RESPONSIVE
+   ============================================================ */
+@media (max-width: 720px) {
+    .auth-body {
+        padding: 16px;
     }
 
-    .auth-body::before {
-        background: linear-gradient(180deg, var(--primary-800) 0%, var(--primary-800) 30%, transparent 30%);
+    .auth-wrapper {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .auth-form-panel {
+        border-radius: 0 0 16px 16px;
+        padding: 32px 24px;
+    }
+
+    /* Panel dekorasi pindah ke atas, ukuran compact */
+    .auth-deco-panel {
+        width: 100%;
+        padding: 32px 24px;
+        min-height: auto;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .auth-deco-inner {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        text-align: left;
+        padding: 0;
+    }
+
+    .auth-deco-logo-wrap {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        flex-shrink: 0;
+        margin: 0;
+    }
+
+    .auth-deco-title {
+        font-size: 18px;
+        margin-bottom: 0;
+    }
+
+    .auth-deco-brand {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-body {
+        padding: 0;
+    }
+
+    .auth-wrapper {
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .auth-form-panel {
+        border-radius: 0;
+    }
+
+    .auth-deco-panel {
+        border-radius: 0;
+    }
+
+    .auth-form-inner {
+        max-width: 100%;
     }
 }
