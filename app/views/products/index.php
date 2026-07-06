@@ -105,10 +105,11 @@
                                     <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     Edit
                                 </a>
-                                <form method="POST" action="<?= APP_URL ?>/products/delete" style="display:inline;" onsubmit="return confirmDelete('Yakin ingin menghapus produk ini?')">
+                                <form method="POST" action="<?= APP_URL ?>/products/delete" style="display:inline;" class="form-delete-product">
                                     <?= Csrf::field() ?>
                                     <input type="hidden" name="id" value="<?= $p['id'] ?>">
-                                    <button type="submit" class="btn-action btn-action-delete" title="Hapus">
+                                    <button type="button" class="btn-action btn-action-delete btn-confirm-delete" 
+                                            data-name="<?= htmlspecialchars($p['name']) ?>" title="Hapus">
                                         <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                         Hapus
                                     </button>
@@ -125,3 +126,28 @@
         </div>
     <?php endif; ?>
 </div>
+
+<script>
+document.querySelectorAll('.btn-confirm-delete').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        const name = this.dataset.name || 'produk ini';
+        const form = this.closest('form');
+        Swal.fire({
+            title: 'Hapus Produk?',
+            html: 'Produk <strong>' + name + '</strong> akan dihapus secara permanen.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            reverseButtons: true,
+            focusCancel: true
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>

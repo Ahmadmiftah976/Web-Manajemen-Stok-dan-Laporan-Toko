@@ -76,11 +76,12 @@
                             (Nonaktif)
                         </td>
                         <td class="text-center">
-                            <form method="POST" action="<?= APP_URL ?>/users/activate" style="display:inline;"
-                                  onsubmit="return confirm('Aktifkan kembali pengguna &quot;<?= htmlspecialchars($u['name']) ?>&quot;?');">
+                            <form method="POST" action="<?= APP_URL ?>/users/activate" style="display:inline;" class="form-activate-user">
                                 <input type="hidden" name="id" value="<?= $u['id'] ?>">
                                 <?= Csrf::field() ?>
-                                <button type="submit" 
+                                <button type="button" 
+                                        class="btn-activate-user"
+                                        data-name="<?= htmlspecialchars($u['name']) ?>"
                                         style="padding:4px 12px; font-size:12px; font-weight:600; border:1px solid var(--success-100); border-radius:4px; background:var(--success-100); color:var(--success-700); cursor:pointer; transition:all 0.15s;"
                                         onmouseover="this.style.background='var(--success-500)'; this.style.color='#fff';"
                                         onmouseout="this.style.background='var(--success-100)'; this.style.color='var(--success-700)';">
@@ -95,3 +96,27 @@
         </table>
     </div>
 </div>
+
+<script>
+document.querySelectorAll('.btn-activate-user').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        const name = this.dataset.name || 'pengguna ini';
+        const form = this.closest('form');
+        Swal.fire({
+            title: 'Aktifkan Pengguna?',
+            html: 'Pengguna <strong>' + name + '</strong> akan dapat login kembali.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Aktifkan',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#22c55e',
+            cancelButtonColor: '#6b7280',
+            reverseButtons: true
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>

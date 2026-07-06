@@ -1,6 +1,6 @@
 /**
  * Lokasi: public/assets/js/pos.js
- * Deskripsi: Logika keranjang belanja Kasir (Vanilla JS)
+ * Deskripsi: Logika keranjang belanja Kasir (Vanilla JS) — menggunakan SweetAlert2
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -33,6 +33,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return isNaN(parsed) ? 0 : parsed;
     };
 
+    // SweetAlert2 helpers
+    const swAlert = (title, text, icon = 'info') => Swal.fire({
+        title,
+        text,
+        icon,
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#6366f1'
+    });
+
+    const swError = (title, text) => Swal.fire({
+        title,
+        text,
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#ef4444'
+    });
+
+    const swConfirm = (title, text, confirmText = 'Ya', icon = 'question') =>
+        Swal.fire({
+            title,
+            text,
+            icon,
+            showCancelButton: true,
+            confirmButtonText: confirmText,
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            reverseButtons: true
+        });
+
     // Auto-select isi input saat fokus (memudahkan kasir ngetik)
     const selectOnFocus = (e) => e.target.select();
     discountInput.addEventListener('focus', selectOnFocus);
@@ -41,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Filter Trigger (Auto submit form saat select berubah)
     document.querySelectorAll('.auto-submit').forEach(el => {
         el.addEventListener('change', (e) => {
-            // Jika ganti gudang, beri tahu kasir bahwa keranjang akan direst (opsional, karena browser refresh form)
             e.target.closest('form').submit();
         });
     });
@@ -85,7 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (existingItem.qty < product.stock) {
                 existingItem.qty++;
             } else {
-                alert(`Stok maksimal untuk ${product.name} hanya ${product.stock}`);
+                swAlert(
+                    'Stok Habis',
+                    `Stok maksimal untuk ${product.name} hanya ${product.stock}.`,
+                    'warning'
+                );
             }
         } else {
             cart.push({ ...product, qty: 1 });
@@ -103,7 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (newQty <= 0) {
                 cart.splice(index, 1);
             } else if (newQty > item.stock) {
-                alert(`Stok tidak mencukupi. Sisa stok: ${item.stock}`);
+                swAlert(
+                    'Stok Tidak Mencukupi',
+                    `Sisa stok ${item.name}: ${item.stock} item.`,
+                    'warning'
+                );
             } else {
                 item.qty = newQty;
             }
@@ -113,12 +150,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearCart() {
         if (cart.length === 0) return;
-        if (confirm('Kosongkan keranjang?')) {
-            cart = [];
-            discountInput.value = '';
-            paidInput.value = '';
-            renderCart();
-        }
+        swConfirm('Kosongkan Keranjang?', 'Semua item di keranjang akan dihapus.', 'Ya, Kosongkan', 'warning')
+            .then((result) => {
+                if (result.isConfirmed) {
+                    cart = [];
+                    discountInput.value = '';
+                    paidInput.value = '';
+                    renderCart();
+                }
+            });
     }
 
     // Bind Clear Cart
@@ -163,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ambil nilai diskon dari input
         discount = parseNumber(discountInput.value);
         if (discount > subtotal) {
-            discount = subtotal; // Diskon tak boleh lebih dari belanja
+            discount = subtotal;
             discountInput.value = formatRupiah(discount).replace('Rp', '').trim();
         }
 
@@ -178,11 +218,10 @@ document.addEventListener('DOMContentLoaded', () => {
             amountPaid = parseNumber(paidInput.value);
             let change = amountPaid - total;
 
-            // Cek validitas bayar
             if (amountPaid === 0) {
                 changeEl.textContent = '-';
                 changeEl.style.color = 'var(--text-secondary)';
-                btnPay.disabled = cart.length === 0; // Tetap aktif agar tau dia belum bayar kalau dipencet
+                btnPay.disabled = cart.length === 0;
             } else if (change < 0) {
                 changeEl.textContent = 'Kurang ' + formatRupiah(Math.abs(change));
                 changeEl.style.color = 'var(--danger-600)';
@@ -204,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event Input uang dan diskon
     discountInput.addEventListener('input', (e) => {
-        // Format otomatis sat diketik (biar enak dibaca)
         let val = parseNumber(e.target.value);
         e.target.value = val === 0 ? '' : formatRupiah(val).replace('Rp', '').replace(',00', '').trim();
         renderCart();
@@ -238,7 +276,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (paymentMethod === 'tunai') {
             let paid = parseNumber(paidInput.value);
             if (paid < total) {
-                alert('Uang yang dimasukkan kurang dari total belanja.');
+                await swError(
+                    'Uang Kurang',
+                    `Uang yang dimasukkan (${formatRupiah(paid)}) kurang dari total belanja (${formatRupiah(total)}).`
+                );
                 paidInput.focus();
                 btnPay.disabled = false;
                 btnPay.innerHTML = 'BAYAR (TUNAI)';
@@ -267,13 +308,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (result.status === 'success') {
                     window.location.href = APP_URL + `/kasir/receipt?id=${result.data.transaction_id}`;
                 } else {
-                    alert('Gagal: ' + result.message);
+                    await swError('Transaksi Gagal', result.message || 'Terjadi kesalahan saat memproses transaksi.');
                     btnPay.disabled = false;
                     btnPay.innerHTML = 'BAYAR (TUNAI)';
                 }
             } catch (error) {
                 console.error('Checkout error:', error);
-                alert('Terjadi kesalahan koneksi server.');
+                await swError('Kesalahan Koneksi', 'Tidak dapat terhubung ke server. Periksa koneksi Anda.');
                 btnPay.disabled = false;
                 btnPay.innerHTML = 'BAYAR (TUNAI)';
             }
@@ -299,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await response.json();
 
                 if (result.status !== 'success') {
-                    alert('Gagal membuat pembayaran QRIS: ' + result.message);
+                    await swError('Gagal Membuat QRIS', result.message || 'Terjadi kesalahan saat membuat pembayaran QRIS.');
                     btnPay.disabled = false;
                     btnPay.innerHTML = 'BAYAR (QRIS)';
                     return;
@@ -308,7 +349,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const { snap_token, order_id, transaction_id } = result.data;
 
                 // 2. Background polling: cek status pembayaran otomatis
-                //    Berjalan selama popup Snap terbuka, redirect jika sudah paid
                 let snapPollingInterval = setInterval(async () => {
                     try {
                         const res = await fetch(APP_URL + `/payment/status?order_id=${order_id}`);
@@ -335,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     onError: function (result) {
                         if (snapPollingInterval) clearInterval(snapPollingInterval);
-                        alert('Pembayaran gagal. Silakan coba lagi.');
+                        swError('Pembayaran Gagal', 'Terjadi kesalahan saat memproses pembayaran QRIS. Silakan coba lagi.');
                         btnPay.disabled = false;
                         btnPay.innerHTML = 'BAYAR (QRIS)';
                     },
@@ -347,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (error) {
                 console.error('QRIS checkout error:', error);
-                alert('Terjadi kesalahan koneksi server.');
+                await swError('Kesalahan Koneksi', 'Tidak dapat terhubung ke server. Periksa koneksi Anda.');
                 btnPay.disabled = false;
                 btnPay.innerHTML = 'BAYAR (QRIS)';
             }
@@ -358,10 +398,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let activePollingInterval = null;
 
     function showWaitingUI(snapToken, orderId, transactionId) {
-        // Hentikan polling sebelumnya jika ada
         if (activePollingInterval) clearInterval(activePollingInterval);
 
-        // Tampilkan tombol aksi di area pos-cart-actions
         const actionsArea = document.querySelector('.pos-cart-actions');
         actionsArea.innerHTML = `
             <div class="qris-waiting-panel" style="display:flex; flex-direction:column; gap:8px; width:100%;">
@@ -398,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     showWaitingUI(snapToken, orderId, transactionId);
                 },
                 onError: function () {
-                    alert('Pembayaran gagal.');
+                    swError('Pembayaran Gagal', 'Terjadi kesalahan saat memproses pembayaran.');
                     resetToNormal();
                 },
                 onClose: function () {
@@ -409,7 +447,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Event: Batalkan transaksi
         document.getElementById('btnCancelQris').addEventListener('click', async () => {
-            if (!confirm('Yakin ingin membatalkan transaksi QRIS ini?')) return;
+            const confirm = await swConfirm(
+                'Batalkan Transaksi?',
+                'Transaksi QRIS ini akan dibatalkan.',
+                'Ya, Batalkan',
+                'warning'
+            );
+            if (!confirm.isConfirmed) return;
             if (activePollingInterval) clearInterval(activePollingInterval);
 
             try {
@@ -419,7 +463,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ order_id: orderId })
                 });
             } catch (e) {
-                // Tetap lanjutkan reset meskipun cancel gagal
                 console.error('Cancel error:', e);
             }
 
@@ -447,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = APP_URL + `/kasir/receipt?id=${transactionId}`;
                 } else if (data.data && data.data.payment_status === 'failed') {
                     clearInterval(activePollingInterval);
-                    alert('Pembayaran QRIS dibatalkan atau expired.');
+                    swError('Pembayaran Dibatalkan', 'Pembayaran QRIS dibatalkan atau sudah expired.');
                     resetToNormal();
                 }
             } catch (e) {
@@ -456,7 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (attempts >= maxAttempts) {
                 clearInterval(activePollingInterval);
-                alert('Waktu menunggu pembayaran habis.');
+                swError('Waktu Habis', 'Waktu menunggu pembayaran QRIS telah habis.');
                 resetToNormal();
             }
         }, 3000);
@@ -467,18 +510,15 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(activePollingInterval);
             activePollingInterval = null;
         }
-        // Kembalikan tombol bayar ke keadaan semula
         const actionsArea = document.querySelector('.pos-cart-actions');
         actionsArea.innerHTML = `
-            <script>const APP_URL = "${APP_URL}";</script>
-            <script src="${document.querySelector('script[data-client-key]')?.src || ''}" data-client-key="${document.querySelector('script[data-client-key]')?.getAttribute('data-client-key') || ''}"></script>
+            <script>const APP_URL = "${APP_URL}";<\/script>
+            <script src="${document.querySelector('script[data-client-key]')?.src || ''}" data-client-key="${document.querySelector('script[data-client-key]')?.getAttribute('data-client-key') || ''}"><\/script>
             <button class="btn btn-primary btn-pay" id="btnPay" ${cart.length === 0 ? 'disabled' : ''}>BAYAR (QRIS)</button>
         `;
-        // Reload halaman agar state bersih (keranjang tetap kosong setelah transaksi dibatalkan)
         window.location.reload();
     }
 
     // Initial render
     renderCart();
 });
-

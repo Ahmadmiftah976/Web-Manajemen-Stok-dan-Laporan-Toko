@@ -7,6 +7,9 @@
 
     <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/sweetalert2.min.css">
     
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -120,7 +123,7 @@
     </nav>
 
     <div class="sidebar-footer">
-        <a href="<?= APP_URL ?>/logout" onclick="return confirm('Yakin ingin keluar?')">
+        <a href="#" id="btnLogout">
             <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Keluar
         </a>
@@ -227,8 +230,34 @@
 <!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+<!-- SweetAlert2 JS -->
+<script src="<?= APP_URL ?>/assets/js/sweetalert2.min.js"></script>
+
 <!-- JS Global -->
 <script src="<?= APP_URL ?>/assets/js/app.js"></script>
+
+<!-- Logout confirm with SweetAlert2 -->
+<script>
+document.getElementById('btnLogout')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    const href = '<?= APP_URL ?>/logout';
+    Swal.fire({
+        title: 'Keluar dari Akun?',
+        text: 'Sesi Anda akan diakhiri.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Keluar',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = href;
+        }
+    });
+});
+</script>
 
 <!-- JS tambahan per halaman (opsional, di-set dari controller) -->
 <?php if (!empty($extraJs)): ?>

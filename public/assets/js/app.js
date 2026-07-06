@@ -39,9 +39,21 @@ function formatRupiah(angka) {
         .toLocaleString('id-ID');
 }
 
-// ── Konfirmasi hapus ──────────────────────────────────────
-function confirmDelete(message = 'Yakin ingin menghapus data ini?') {
-    return confirm(message);
+// ── Konfirmasi hapus (SweetAlert2) ───────────────────────
+async function confirmDelete(message = 'Yakin ingin menghapus data ini?', form = null) {
+    const result = await Swal.fire({
+        title: 'Konfirmasi Hapus',
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        reverseButtons: true,
+        focusCancel: true
+    });
+    return result.isConfirmed;
 }
 
 // ── Tutup notifikasi dropdown saat klik di luar ───────────

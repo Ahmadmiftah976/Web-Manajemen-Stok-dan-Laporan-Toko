@@ -86,11 +86,12 @@
                                     Edit
                                 </a>
                                 <?php if ((int)$u['id'] !== (int)Auth::user('id')): ?>
-                                <form method="POST" action="<?= APP_URL ?>/users/delete" style="display:inline;"
-                                      onsubmit="return confirm('Yakin ingin menonaktifkan pengguna &quot;<?= htmlspecialchars($u['name']) ?>&quot;?');">
+                                <form method="POST" action="<?= APP_URL ?>/users/delete" style="display:inline;" class="form-deactivate-user">
                                     <input type="hidden" name="id" value="<?= $u['id'] ?>">
                                     <?= Csrf::field() ?>
-                                    <button type="submit" 
+                                    <button type="button" 
+                                            class="btn-deactivate-user"
+                                            data-name="<?= htmlspecialchars($u['name']) ?>"
                                             style="padding:4px 12px; font-size:12px; font-weight:600; border:1px solid var(--danger-100); border-radius:4px; background:var(--danger-100); color:var(--danger-600); cursor:pointer; transition:all 0.15s;"
                                             onmouseover="this.style.background='var(--danger-600)'; this.style.color='#fff';"
                                             onmouseout="this.style.background='var(--danger-100)'; this.style.color='var(--danger-600)';">
@@ -102,8 +103,33 @@
                         </td>
                     </tr>
                     <?php endforeach; ?>
-                <?php endif; ?>
+                    <?php endif; ?>
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+document.querySelectorAll('.btn-deactivate-user').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        const name = this.dataset.name || 'pengguna ini';
+        const form = this.closest('form');
+        Swal.fire({
+            title: 'Nonaktifkan Pengguna?',
+            html: 'Pengguna <strong>' + name + '</strong> tidak akan bisa login setelah dinonaktifkan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Nonaktifkan',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            reverseButtons: true,
+            focusCancel: true
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
