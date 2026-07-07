@@ -106,6 +106,7 @@
 /* Wrapper input dengan icon di kiri */
 .auth-input-wrapper {
     position: relative;
+    width: 100%;
 }
 
 .auth-input-icon {
