@@ -134,6 +134,7 @@
 /* Geser teks input agar tidak ketutup icon */
 .auth-input-wrapper .form-control {
     padding-left: 38px;
+    width: 100%;
 }
 
 /* Warnai icon saat input fokus */
