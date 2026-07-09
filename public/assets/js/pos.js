@@ -148,6 +148,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function setQty(id, qty) {
+        const index = cart.findIndex(item => item.id === id);
+        if (index > -1) {
+            const item = cart[index];
+            if (qty <= 0) {
+                cart.splice(index, 1);
+            } else if (qty > item.stock) {
+                swAlert(
+                    'Stok Tidak Mencukupi',
+                    `Sisa stok ${item.name}: ${item.stock} item.`,
+                    'warning'
+                );
+                item.qty = item.stock; // Set otomatis ke maksimal stok
+            } else {
+                item.qty = qty;
+            }
+            renderCart();
+        }
+    }
+
     function clearCart() {
         if (cart.length === 0) return;
         swConfirm('Kosongkan Keranjang?', 'Semua item di keranjang akan dihapus.', 'Ya, Kosongkan', 'warning')
@@ -189,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="cart-item-actions">
                         <button class="cart-qty-btn dec" data-id="${item.id}">-</button>
-                        <div class="cart-qty-val">${item.qty}</div>
+                        <input type="number" class="cart-qty-val" data-id="${item.id}" value="${item.qty}" min="1" max="${item.stock}">
                         <button class="cart-qty-btn inc" data-id="${item.id}" ${item.qty >= item.stock ? 'disabled' : ''}>+</button>
                     </div>
                 `;
@@ -238,6 +258,15 @@ document.addEventListener('DOMContentLoaded', () => {
             updateQty(parseInt(e.target.dataset.id), -1);
         } else if (e.target.classList.contains('inc')) {
             updateQty(parseInt(e.target.dataset.id), 1);
+        }
+    });
+
+    // Event Delegasi keranjang untuk input manual
+    cartItemsList.addEventListener('change', (e) => {
+        if (e.target.classList.contains('cart-qty-val')) {
+            let val = parseInt(e.target.value);
+            if (isNaN(val) || val < 1) val = 1;
+            setQty(parseInt(e.target.dataset.id), val);
         }
     });
 

@@ -210,11 +210,31 @@
 .cart-qty-btn:hover { background: var(--bg-hover); }
 .cart-qty-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.cart-qty-val {
+input.cart-qty-val {
     font-size: 13px;
     font-weight: 600;
-    min-width: 16px;
+    width: 36px;
     text-align: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    padding: 2px 0;
+    background: #fff;
+    color: var(--text-dark);
+}
+
+/* Hilangkan panah spinner bawaan input type="number" */
+input.cart-qty-val::-webkit-outer-spin-button,
+input.cart-qty-val::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input.cart-qty-val[type=number] {
+    -moz-appearance: textfield;
+}
+
+input.cart-qty-val:focus {
+    outline: none;
+    border-color: var(--primary-600);
 }
 
 /* -- Hitungan Keranjang -- */
